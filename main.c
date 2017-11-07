@@ -10,17 +10,21 @@ SmotBot garden control unit
 
 
 //TODO move these to sperate file of settings
-//define delays between the sensor readings, in seconds
-const int dht22_delay = 300;
-const int light_sensor_delay = 300;
-const int soil_sensor_delay = 1200;
+//define delays between the sensor readings, in 5 minute incirments
+const int dht22_delay = 2;
+const int light_sensor_delay = 2;
+const int soil_sensor_delay = 12;
 
 
 
 
 int main(int argc, char *argv[]) {
-	//TODO you know, the code
 
+	open_timer(300); //default to 300 for 5 minute incriments. lower this for "accelerated time" for debugging
+	attach_handler();
+	
+	while(1); //TODO make this not so CPU intensive to idle
+	
 }
 
 //TODO change to accept prevous itimerval struct as argument
