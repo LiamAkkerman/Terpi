@@ -6,7 +6,7 @@ SmotBot garden control unit
 #include <stdio.h>
 #include <time.h> 
 #include <unistd.h>
-//#include "main.h"
+#include "main.h"
 
 
 //TODO move these to sperate file of settings
