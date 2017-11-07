@@ -23,6 +23,7 @@ int main(int argc, char *argv[]) {
 
 }
 
+//TODO change to accept prevous itimerval struct as argument
 int open_timer(int delay_number) {
 	struct itimerval timer;
 	
@@ -33,7 +34,7 @@ int open_timer(int delay_number) {
 	timer.it_interval.tv_usec = 0;
 	
 	/* Start a virtual timer. It counts down whenever this process is executing. */
-	if(setitimer(ITIMER_VIRTUAL, &timer, NULL)!=0) {
+	if(setitimer(ITIMER_VIRTUAL, &timer, NULL) != 0) {
 		printf("ERROR: opening timer failed\n");
 		return -1; //TODO I'd rather have only one final return
 	}
@@ -41,7 +42,7 @@ int open_timer(int delay_number) {
 	return 0;
 }
 
-//TODO change to accpect prevous sigaction struct as argument
+//TODO change to accept prevous sigaction struct as argument
 int attach_handler(void) {
 	//assigns an action to occur when timer expires
 	struct sigaction sa;
@@ -58,8 +59,33 @@ int attach_handler(void) {
 }
 
 int timer_handler(int signum) {
+	static int count = 0;
+	count = count + 1;
+	int result = 0;
 	
-	return 0;
+	//if the current incriment count is a prechosen time, preform approriate action
+	//TODO make more dynamic, scaling without needed to rewrite
+	if(count == dht22_delay) {
+		if(read_dht22() != 0) {
+			printf("ERROR: DHT22 reading failed\n");
+			result = -1;
+		}
+	}
+	else if(count == light_sensor_delay) {
+		if(read_light() != 0) {
+			printf("ERROR: light reading failed\n");
+			result = -1;
+		}
+	}
+	else if(count == soil_sensor_delay) {
+		if(read_soil_moist() != 0) {
+			printf("ERROR: soil moisture reading failed\n");
+			result = -1;
+		}
+	}
+	
+	
+	return result;
 }
 
 //reading sensor functions
