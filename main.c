@@ -35,16 +35,28 @@ int open_timer(int delay_number) {
 	/* Start a virtual timer. It counts down whenever this process is executing. */
 	if(setitimer(ITIMER_VIRTUAL, &timer, NULL)!=0) {
 		printf("ERROR: opening timer failed\n");
-		return -1; //I'd rather have only one return
+		return -1; //TODO I'd rather have only one final return
 	}
 	
 	return 0;
 }
 
+//TODO change to accpect prevous sigaction struct as argument
 int attach_handler(void) {
+	//assigns an action to occur when timer expires
+	struct sigaction sa;
+	memset(&sa, 0, sizeof(sa)); //I don't actaully know what this does, but it's supposed to be used
+	
+	//calls the referanced function
+	sa.sa_handler = &timer_handler;
+	if(sigaction(SIGVTALRM, &sa, NULL) != 0) { 
+		printf("ERROR: handler failed\n");
+		return -1; //TODO I'd rather have only one final return
+	}
 	
 	return 0;
 }
+
 int timer_handler(int signum) {
 	
 	return 0;
