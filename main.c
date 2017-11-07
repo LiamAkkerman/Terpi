@@ -63,31 +63,34 @@ int attach_handler(void) {
 }
 
 int timer_handler(int signum) {
-	static int count = 0;
+	static int count = 0; //TODO calibrate to current irl time at boot
 	count = count + 1;
 	int result = 0;
 	
-	//if the current incriment count is a prechosen time, preform approriate action
+	//TODO possibly change to check current irl time at each interval, instead of counting intervals
+	
+	//if the current interval count is a prechosen time, preform approriate action
 	//TODO make more dynamic, scaling without needed to rewrite
-	if(count == dht22_delay) {
+	if((count % dht22_delay) == 0) {
 		if(read_dht22() != 0) {
 			printf("ERROR: DHT22 reading failed\n");
 			result = -1;
 		}
 	}
-	else if(count == light_sensor_delay) {
+	else if((count % light_sensor_delay) == 0) {
 		if(read_light() != 0) {
 			printf("ERROR: light reading failed\n");
 			result = -1;
 		}
 	}
-	else if(count == soil_sensor_delay) {
+	else if((count % soil_sensor_delay) == 0) {
 		if(read_soil_moist() != 0) {
 			printf("ERROR: soil moisture reading failed\n");
 			result = -1;
 		}
 	}
 	
+	count = count % 288; //there are 288 5 minute incriments in 24 hours
 	
 	return result;
 }
