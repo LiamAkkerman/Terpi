@@ -23,7 +23,20 @@ int main(int argc, char *argv[]) {
 
 }
 
-int open_timer(int delay) {
+int open_timer(int delay_number) {
+	struct itimerval timer;
+	
+	/* Configure the timer to expire after some seconds... */
+	timer.it_value.tv_sec = delay_number;
+	timer.it_value.tv_usec = 0;
+	timer.it_interval.tv_sec = delay_number;
+	timer.it_interval.tv_usec = 0;
+	
+	/* Start a virtual timer. It counts down whenever this process is executing. */
+	if(setitimer(ITIMER_VIRTUAL, &timer, NULL)!=0) {
+		printf("ERROR: opening timer failed\n");
+		return -1; //I'd rather have only one return
+	}
 	
 	return 0;
 }
