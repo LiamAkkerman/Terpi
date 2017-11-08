@@ -21,7 +21,7 @@ none thus far...
 #### Phase 2
 6. LCD display
 7. Soil mousture sensor
-8. Curculation fan
+8. Circulation fan
 9. View lights
 
 #### Phase 3
@@ -36,3 +36,5 @@ none thus far...
 14. CO<sub>2</sub> sensor
 15. CO<sub>2</sub> control
 16. Heating
+17. Time-lapse camera
+18. pH sensor
