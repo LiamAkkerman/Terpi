@@ -11,9 +11,11 @@ SmotBot garden control unit
 
 //TODO move these to sperate file of settings
 //define delays between the sensor readings, in 5 minute incirments
-const int dht22_delay = 2;
+const int dht22_delay = 2; //every 10 minutes
 const int light_sensor_delay = 2;
-const int soil_sensor_delay = 12;
+const int soil_sensor_delay = 12; //every hour
+const int light_on_time = 72; //everyday at 6am
+#define FULL_DAY 288 
 
 
 
@@ -89,12 +91,22 @@ int timer_handler(int signum) {
 			result = -1;
 		}
 	}
+	if((count % FULL_DAY) == light_on_time) {
+		//turn lights on
+		//this is an example of a fixed time event
+	}
 	
 	/* TODO handle rollover better
 		-might not even be needed if rebooted suffeciently or recalibrated regularly
 		-regular recalibration could possibly miss event if time is adjusted forward
+	
+	if(count > 7*FULL_DAY) {
+		//only do one of the following lines:
+		count = get_irl_time(); //reset and recalibrate time after a week
+		count = count % FULL_DAY; //reset but don't recalibrate, not really accomplishing anything
+	}
+	
 	*/
-	count = count % 288; //there are 288 5 minute incriments in 24 hours
 	
 	return result;
 }
