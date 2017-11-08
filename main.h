@@ -5,6 +5,7 @@ int main(int, char *);
 int open_timer(int);
 int attach_handler(void);
 int timer_handler(int);
+int get_irl_time(void);
 
 //reading sensor functions
 int read_dht22(void);

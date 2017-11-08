@@ -63,7 +63,7 @@ int attach_handler(void) {
 }
 
 int timer_handler(int signum) {
-	static int count = 0; //TODO calibrate to current irl time at boot
+	static int count = get_irl_time(); 
 	count = count + 1;
 	int result = 0;
 	
@@ -77,22 +77,43 @@ int timer_handler(int signum) {
 			result = -1;
 		}
 	}
-	else if((count % light_sensor_delay) == 0) {
+	if((count % light_sensor_delay) == 0) {
 		if(read_light() != 0) {
 			printf("ERROR: light reading failed\n");
 			result = -1;
 		}
 	}
-	else if((count % soil_sensor_delay) == 0) {
+	if((count % soil_sensor_delay) == 0) {
 		if(read_soil_moist() != 0) {
 			printf("ERROR: soil moisture reading failed\n");
 			result = -1;
 		}
 	}
 	
+	/* TODO handle rollover better
+		-might not even be needed if rebooted suffeciently or recalibrated regularly
+		-regular recalibration could possibly miss event if time is adjusted forward
+	*/
 	count = count % 288; //there are 288 5 minute incriments in 24 hours
 	
 	return result;
+}
+
+int get_irl_time(void) {
+	time_t curtime;
+	struct tm *loc_time;
+	int intervals;
+
+	//Getting current time of system
+	curtime = time(NULL);
+
+	// Converting current time to local time, not seconds since Jan 1, 1970
+	loc_time = localtime(&curtime);
+	
+	//Convert to 5 minute intervals
+	intervals = 12*(loc_time->tm_hour) + (int)((loc_time->tm_min)/5);
+	
+	return intervals;
 }
 
 //reading sensor functions
