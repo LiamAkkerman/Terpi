@@ -33,6 +33,6 @@ none thus far...
 13. Irrigation system
 
 #### Phase X
-14. CO~2~ sensor
-15. CO~2~ control
+14. CO<sub>2</sub> sensor
+15. CO<sub>2</sub> control
 16. Heating
