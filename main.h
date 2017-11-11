@@ -1,10 +1,10 @@
 //main
-int main(int, char *);
+//int main(int, char *);
 
 //timer functions
 int open_timer(int);
 int attach_handler(void);
-int timer_handler(int);
+void timer_handler(int);
 int get_irl_time(void);
 
 //reading sensor functions

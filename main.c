@@ -6,6 +6,9 @@ SmotBot garden control unit
 #include <stdio.h>
 #include <time.h> 
 #include <unistd.h>
+#include <signal.h>
+#include <string.h>
+#include <sys/time.h>
 #include "main.h"
 
 
@@ -64,14 +67,23 @@ int attach_handler(void) {
 	return 0;
 }
 
-int timer_handler(int signum) {
-	static int count = get_irl_time(); 
+void timer_handler(int signum) {
+	static int count = 0; 
 	count = count + 1;
 	int result = 0;
 	
 	//TODO possibly change to check current irl time at each interval, instead of counting intervals
 	
 	//if the current interval count is a prechosen time, preform approriate action
+	if(count == 0) {
+		int irl_count = get_irl_time();
+		if(irl_count < 0) {
+			printf("ERROR: system clock time failed\n");
+			result = -1;
+		} else {
+			count = irl_count;
+		}
+	}
 	//TODO make more dynamic, scaling without needed to rewrite
 	if((count % dht22_delay) == 0) {
 		if(read_dht22() != 0) {
@@ -108,7 +120,12 @@ int timer_handler(int signum) {
 	
 	*/
 	
-	return result;
+	/* 
+		TODO I needed to changed this to void to work with the attach_handler function
+		I don't actaully know how the referance to a function works, ...
+		so I don't know if we can have this return anything or if it needs to be a void function
+	//return result;
+	*/
 }
 
 int get_irl_time(void) {
@@ -125,6 +142,7 @@ int get_irl_time(void) {
 	//Convert to 5 minute intervals
 	intervals = 12*(loc_time->tm_hour) + (int)((loc_time->tm_min)/5);
 	
+	//TODO add error handling
 	return intervals;
 }
 
