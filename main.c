@@ -21,12 +21,13 @@ SmotBot garden control unit
 
 int main(int argc, char *argv[]) {
 	
-	ini_parse("settings.ini", ini_handler_func, &settings);
-	/*if(ini_parse("settings.ini", ini_handler_func, &settings) < 0) {
+	//read time settings from settings file
+	if(ini_parse("settings.ini", ini_handler_func, &settings) < 0) {
 		printf("ERROR: can't load 'settings.ini'\n");
 		return -1;
-    } */
+    } 
 
+	//initilize timer 
 	open_timer(5); //default to 300 for 5 minute incriments. lower this for "accelerated time" for debugging
 	attach_handler();
 	
@@ -37,6 +38,7 @@ int main(int argc, char *argv[]) {
 static int ini_handler_func(void* user, const char* section, const char* name, const char* value) {
 	configuration* pconfig = (configuration*)user;
 
+	//writes all the values from the INI to the settings struct
 	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 	if(MATCH("Sensors", "dht22_delay")) {
 		pconfig->dht22_delay = atoi(value);
@@ -108,8 +110,7 @@ int attach_handler(void) {
 
 void timer_handler(int signum) {
 	static int count = 0; 
-	count = count + 1;
-	int result = 0;
+	char result = 0;
 	
 	//TODO possibly change to check current irl time at each interval, instead of counting intervals
 	
@@ -146,6 +147,10 @@ void timer_handler(int signum) {
 		//turn lights on
 		//this is an example of a fixed time event
 	}
+	else if((count % FULL_DAY) == ((settings.light_on_time + settings.light_on_duration) % FULL_DAY)) {
+		//turn lights off
+		//this means that the duration has concluded
+	}
 	
 	/* TODO handle rollover better
 		-might not even be needed if rebooted suffeciently or recalibrated regularly
@@ -158,6 +163,11 @@ void timer_handler(int signum) {
 	}
 	
 	*/
+	
+	//update_display();
+	post_data();
+	printf("Current increment: %d\n", count);
+	count = count + 1;
 	
 	/* 
 		TODO:
