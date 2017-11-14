@@ -9,27 +9,66 @@ SmotBot garden control unit
 #include <signal.h>
 #include <string.h>
 #include <sys/time.h>
+#include <stdlib.h>
 #include "main.h"
+#include "./inih/ini.h"
 
 
-//TODO move these to sperate file of settings
-//define delays between the sensor readings, in 5 minute incirments
-const int dht22_delay = 2; //every 10 minutes
-const int light_sensor_delay = 2;
-const int soil_sensor_delay = 12; //every hour
-const int light_on_time = 72; //everyday at 6am
 #define FULL_DAY 288 
 
 
 
 
 int main(int argc, char *argv[]) {
+	
+	ini_parse("settings.ini", ini_handler_func, &settings);
+	/*if(ini_parse("settings.ini", ini_handler_func, &settings) < 0) {
+		printf("ERROR: can't load 'settings.ini'\n");
+		return -1;
+    } */
 
-	open_timer(300); //default to 300 for 5 minute incriments. lower this for "accelerated time" for debugging
+	open_timer(5); //default to 300 for 5 minute incriments. lower this for "accelerated time" for debugging
 	attach_handler();
 	
 	while(1); //TODO make this not so CPU intensive to idle
 	
+}
+
+static int ini_handler_func(void* user, const char* section, const char* name, const char* value) {
+	configuration* pconfig = (configuration*)user;
+
+	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
+	if(MATCH("Sensors", "dht22_delay")) {
+		pconfig->dht22_delay = atoi(value);
+	} 
+	else if(MATCH("Sensors", "light_sensor_delay")) {
+		pconfig->light_sensor_delay = atoi(value);
+	} 
+	else if(MATCH("Sensors", "soil_sensor_delay")) {
+		pconfig->soil_sensor_delay = atoi(value);
+	} 
+	else if(MATCH("Controls", "light_on_time")) {
+		pconfig->light_on_time = atoi(value);
+	} 
+	else if(MATCH("Controls", "light_on_duration")) {
+		pconfig->light_on_duration = atoi(value);
+	} 
+	else if(MATCH("Controls", "exhaust_delay")) {
+		pconfig->exhaust_delay = atoi(value);
+	} 
+	else if(MATCH("Controls", "exhaust_duration")) {
+		pconfig->exhaust_duration = atoi(value);
+	} 
+	else if(MATCH("Controls", "circulation_delay")) {
+		pconfig->circulation_delay = atoi(value);
+	} 
+	else if(MATCH("Controls", "circulation_duration")) {
+		pconfig->circulation_duration = atoi(value);
+	}
+	else {
+		return -1;  /* unknown section/name, error */
+	}
+	return 0;
 }
 
 //TODO change to accept prevous itimerval struct as argument
@@ -85,25 +124,25 @@ void timer_handler(int signum) {
 		}
 	}
 	//TODO make more dynamic, scaling without needed to rewrite
-	if((count % dht22_delay) == 0) {
+	if((count % settings.dht22_delay) == 0) {
 		if(read_dht22() != 0) {
 			printf("ERROR: DHT22 reading failed\n");
 			result = -1;
 		}
 	}
-	if((count % light_sensor_delay) == 0) {
+	if((count % settings.light_sensor_delay) == 0) {
 		if(read_light() != 0) {
 			printf("ERROR: light reading failed\n");
 			result = -1;
 		}
 	}
-	if((count % soil_sensor_delay) == 0) {
+	if((count % settings.soil_sensor_delay) == 0) {
 		if(read_soil_moist() != 0) {
 			printf("ERROR: soil moisture reading failed\n");
 			result = -1;
 		}
 	}
-	if((count % FULL_DAY) == light_on_time) {
+	if((count % FULL_DAY) == settings.light_on_time) {
 		//turn lights on
 		//this is an example of a fixed time event
 	}
@@ -121,7 +160,8 @@ void timer_handler(int signum) {
 	*/
 	
 	/* 
-		TODO I needed to changed this to void to work with the attach_handler function
+		TODO:
+		I needed to changed this to void to work with the attach_handler function
 		I don't actaully know how the referance to a function works, ...
 		so I don't know if we can have this return anything or if it needs to be a void function
 	//return result;
@@ -148,14 +188,17 @@ int get_irl_time(void) {
 
 //reading sensor functions
 int read_dht22(void) {
+	printf("reading DHT22\n");
 	
 	return 0;
 }
 int read_light(void) {
+	printf("reading light\n");
 	
 	return 0;
 }
 int read_soil_moist(void) {
+	printf("reading soil moisture\n");
 	
 	return 0;
 }
