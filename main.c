@@ -14,11 +14,6 @@ SmotBot garden control unit
 #include "./inih/ini.h"
 
 
-#define FULL_DAY 288 
-
-
-
-
 int main(int argc, char *argv[]) {
 	
 	//read time settings from settings file
@@ -29,6 +24,7 @@ int main(int argc, char *argv[]) {
 
 	//initilize timer 
 	open_timer(5); //default to 300 for 5 minute incriments. lower this for "accelerated time" for debugging
+	//open_timer(FULL_INC);
 	attach_handler();
 	
 	while(1); //TODO make this not so CPU intensive to idle
@@ -40,7 +36,10 @@ static int ini_handler_func(void* user, const char* section, const char* name, c
 
 	//writes all the values from the INI to the settings struct
 	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-	if(MATCH("Sensors", "dht22_delay")) {
+	if(MATCH("System", "increment_size")) {
+		pconfig->increment_size = atoi(value);
+	}
+	else if(MATCH("Sensors", "dht22_delay")) {
 		pconfig->dht22_delay = atoi(value);
 	} 
 	else if(MATCH("Sensors", "light_sensor_delay")) {
@@ -77,10 +76,10 @@ static int ini_handler_func(void* user, const char* section, const char* name, c
 int open_timer(int delay_number) {
 	struct itimerval timer;
 	
-	/* Configure the timer to expire after some seconds... */
-	timer.it_value.tv_sec = delay_number;
+	/* Configure the timer to expire after some minutes... */
+	timer.it_value.tv_sec = 60*delay_number;
 	timer.it_value.tv_usec = 0;
-	timer.it_interval.tv_sec = delay_number;
+	timer.it_interval.tv_sec = 60*delay_number;
 	timer.it_interval.tv_usec = 0;
 	
 	/* Start a virtual timer. It counts down whenever this process is executing. */
@@ -112,10 +111,8 @@ void timer_handler(int signum) {
 	static int count = 0; 
 	char result = 0;
 	
-	//TODO possibly change to check current irl time at each interval, instead of counting intervals
-	
 	//if the current interval count is a prechosen time, preform approriate action
-	if(count == 0) {
+	if((count == 0) || (count == (3*FULL_DAY))) {
 		int irl_count = get_irl_time();
 		if(irl_count < 0) {
 			printf("ERROR: system clock time failed\n");
@@ -152,18 +149,6 @@ void timer_handler(int signum) {
 		//this means that the duration has concluded
 	}
 	
-	/* TODO handle rollover better
-		-might not even be needed if rebooted suffeciently or recalibrated regularly
-		-regular recalibration could possibly miss event if time is adjusted forward
-	
-	if(count > 7*FULL_DAY) {
-		//only do one of the following lines:
-		count = get_irl_time(); //reset and recalibrate time after a week
-		count = count % FULL_DAY; //reset but don't recalibrate, not really accomplishing anything
-	}
-	
-	*/
-	
 	//update_display();
 	post_data();
 	printf("Current increment: %d\n", count);
@@ -189,8 +174,8 @@ int get_irl_time(void) {
 	// Converting current time to local time, not seconds since Jan 1, 1970
 	loc_time = localtime(&curtime);
 	
-	//Convert to 5 minute intervals
-	intervals = 12*(loc_time->tm_hour) + (int)((loc_time->tm_min)/5);
+	//Convert to increments
+	intervals = FULL_HOUR*(loc_time->tm_hour) + (int)((loc_time->tm_min)/FULL_INC);
 	
 	//TODO add error handling
 	return intervals;
