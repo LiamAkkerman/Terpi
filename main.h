@@ -23,17 +23,31 @@ int post_data(void); //this'll probably have arguments when implemented
 #define FULL_INC (settings.increment_size)
 
 typedef struct {
-	int increment_size; //TODO possibly change this to be compile-time constant, but still changable
-	int dht22_delay;
-	int light_sensor_delay;
-	int soil_sensor_delay;
-	int light_on_time;
-	int light_on_duration;
-	int exhaust_delay;
-	int exhaust_duration;
-	int circulation_delay;
-	int circulation_duration;
+	unsigned int dht22_delay;
+	unsigned int light_sensor_delay;
+	unsigned int soil_sensor_delay;
+	unsigned int light_on_time;
+	unsigned int light_on_duration;
+	unsigned int exhaust_delay;
+	unsigned int exhaust_duration;
+	unsigned int circulation_delay;
+	unsigned int circulation_duration;
+	unsigned int increment_size; //TODO possibly change this to be compile-time constant
+	const char *influx_url; //TODO memory size for this
+	const char *influx_auth;
 } configuration;
 
-configuration settings;
+typedef struct {
+	int tempurature:8;
+	unsigned int humidity:8;
+	unsigned int light_level:12;
+	unsigned int soil_moisture:12;
+	unsigned int light_on:1; //TODO maybe use stdbool.h or _Bool instead of bitfield
+	unsigned int view_light_on:1;
+	unsigned int exhaust_on:1;
+	unsigned int fan_on:1;
+	unsigned int measured:1;
+} properties;
 
+configuration settings;
+properties conditions;

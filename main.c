@@ -21,6 +21,9 @@ int main(int argc, char *argv[]) {
 		printf("ERROR: can't load 'settings.ini'\n");
 		return -1;
     } 
+	
+	//TODO make curl and influx objects (i mean structs)
+	
 
 	//initilize timer 
 	open_timer(5); //default to 300 for 5 minute incriments. lower this for "accelerated time" for debugging
@@ -36,10 +39,7 @@ static int ini_handler_func(void* user, const char* section, const char* name, c
 
 	//writes all the values from the INI to the settings struct
 	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-	if(MATCH("System", "increment_size")) {
-		pconfig->increment_size = atoi(value);
-	}
-	else if(MATCH("Sensors", "dht22_delay")) {
+	if(MATCH("Sensors", "dht22_delay")) {
 		pconfig->dht22_delay = atoi(value);
 	} 
 	else if(MATCH("Sensors", "light_sensor_delay")) {
@@ -65,6 +65,12 @@ static int ini_handler_func(void* user, const char* section, const char* name, c
 	} 
 	else if(MATCH("Controls", "circulation_duration")) {
 		pconfig->circulation_duration = atoi(value);
+	}
+	else if(MATCH("System", "increment_size")) {
+		pconfig->increment_size = atoi(value);
+	}
+	else if(MATCH("System", "influx_url")) {
+		pconfig->influx_url = strdup(value);
 	}
 	else {
 		return -1;  /* unknown section/name, error */
@@ -107,6 +113,7 @@ int attach_handler(void) {
 	return 0;
 }
 
+//####################&&&&&&&&&&&&&&&######################&&&&&&&&&&&&&############# bookmark
 void timer_handler(int signum) {
 	static int count = 0; 
 	char result = 0;
@@ -150,7 +157,11 @@ void timer_handler(int signum) {
 	}
 	
 	//update_display();
-	post_data();
+	if(conditions.measured) {
+		post_data();
+		conditions.measured = 0;
+	}
+	
 	printf("Current increment: %d\n", count);
 	count = count + 1;
 	
@@ -184,22 +195,36 @@ int get_irl_time(void) {
 //reading sensor functions
 int read_dht22(void) {
 	printf("reading DHT22\n");
+	if(!conditions.measured) {
+		conditions.measured = 1;
+	}
 	
 	return 0;
 }
 int read_light(void) {
 	printf("reading light\n");
+	if(!conditions.measured) {
+		conditions.measured = 1;
+	}
 	
 	return 0;
 }
 int read_soil_moist(void) {
 	printf("reading soil moisture\n");
+	if(!conditions.measured) {
+		conditions.measured = 1;
+	}
 	
 	return 0;
 }
 
 //posting data and influxDB function
 int post_data(void) {
+	//TODO accept conditions struct referance as argument
+	//TODO compile message from conditions
+	//TODO curl message to influxDB
+	//TODO curl authentication
+	
 	
 	return 0;
 }
