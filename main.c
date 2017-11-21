@@ -10,31 +10,36 @@ SmotBot garden control unit
 #include <string.h>
 #include <sys/time.h>
 #include <stdlib.h>
+#include <curl/curl.h>
 #include "main.h"
 #include "./inih/ini.h"
 
 
 int main(int argc, char *argv[]) {
+	printf("program started\n");
 	
 	//read time settings from settings file
 	if(ini_parse("settings.ini", ini_handler_func, &settings) < 0) {
 		printf("ERROR: can't load 'settings.ini'\n");
 		return -1;
     } 
+	printf("settings parsed\n");
 	
-	//TODO make curl and influx objects (i mean structs)
-	
+	(conditions.measured) = 0;
 
 	//initilize timer 
-	open_timer(5); //default to 300 for 5 minute incriments. lower this for "accelerated time" for debugging
+	open_timer(1); // lower this for "accelerated time" for debugging
 	//open_timer(FULL_INC);
+	printf("timer opened\n");
 	attach_handler();
+	printf("timer function attached\n");
+	
 	
 	while(1); //TODO make this not so CPU intensive to idle
 	
 }
 
-static int ini_handler_func(void* user, const char* section, const char* name, const char* value) {
+static int ini_handler_func(void *user, const char *section, const char *name, const char *value) {
 	configuration* pconfig = (configuration*)user;
 
 	//writes all the values from the INI to the settings struct
@@ -72,6 +77,12 @@ static int ini_handler_func(void* user, const char* section, const char* name, c
 	else if(MATCH("System", "influx_url")) {
 		pconfig->influx_url = strdup(value);
 	}
+	else if(MATCH("System", "influx_db")) {
+		pconfig->influx_db = strdup(value);
+	}
+	else if(MATCH("System", "influx_auth")) {
+		pconfig->influx_auth = strdup(value);
+	}
 	else {
 		return -1;  /* unknown section/name, error */
 	}
@@ -82,10 +93,11 @@ static int ini_handler_func(void* user, const char* section, const char* name, c
 int open_timer(int delay_number) {
 	struct itimerval timer;
 	
+	//TODO change 10 back to 60. 10 is for super fast
 	/* Configure the timer to expire after some minutes... */
-	timer.it_value.tv_sec = 60*delay_number;
+	timer.it_value.tv_sec = 10*delay_number;
 	timer.it_value.tv_usec = 0;
-	timer.it_interval.tv_sec = 60*delay_number;
+	timer.it_interval.tv_sec = 10*delay_number;
 	timer.it_interval.tv_usec = 0;
 	
 	/* Start a virtual timer. It counts down whenever this process is executing. */
@@ -158,7 +170,7 @@ void timer_handler(int signum) {
 	
 	//update_display();
 	if(conditions.measured) {
-		post_data();
+		post_data(&conditions);
 		conditions.measured = 0;
 	}
 	
@@ -195,7 +207,7 @@ int get_irl_time(void) {
 //reading sensor functions
 int read_dht22(void) {
 	printf("reading DHT22\n");
-	if(!conditions.measured) {
+	if(!(conditions.measured)) {
 		conditions.measured = 1;
 	}
 	
@@ -219,10 +231,31 @@ int read_soil_moist(void) {
 }
 
 //posting data and influxDB function
-int post_data(void) {
-	//TODO accept conditions struct referance as argument
-	//TODO compile message from conditions
-	//TODO curl message to influxDB
+int post_data(const properties *conditions_to_post) {
+	printf("posting data to influxDB\n");
+	CURL *curl;
+	CURLcode result;
+	
+	char server_url[64];
+	snprintf(server_url, sizeof server_url, "http://%s/write?db=%s", settings.influx_url, settings.influx_db);	
+	printf("Server URL: %s\n",server_url);
+	
+	char *message; //TODO compile message from conditions
+	
+	curl = curl_easy_init();
+	if(curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, server_url);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
+	 
+		result = curl_easy_perform(curl);
+		/* Check for errors */ 
+		if(result != CURLE_OK) {
+			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(result));
+		}
+		
+		curl_easy_cleanup(curl);
+	}
+	
 	//TODO curl authentication
 	
 	

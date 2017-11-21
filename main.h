@@ -1,26 +1,4 @@
 //main
-//int main(int, char *);
-
-//timer functions
-int open_timer(int);
-int attach_handler(void);
-void timer_handler(int);
-int get_irl_time(void);
-
-static int ini_handler_func(void*, const char*, const char*, const char* );
-
-//reading sensor functions
-int read_dht22(void);
-int read_light(void);
-int read_soil_moist(void);
-
-//posting data and influxDB functions
-int post_data(void); //this'll probably have arguments when implemented
-
-
-#define FULL_HOUR ((int)(60/settings.increment_size))
-#define FULL_DAY (24*FULL_HOUR)
-#define FULL_INC (settings.increment_size)
 
 typedef struct {
 	unsigned int dht22_delay;
@@ -34,6 +12,7 @@ typedef struct {
 	unsigned int circulation_duration;
 	unsigned int increment_size; //TODO possibly change this to be compile-time constant
 	const char *influx_url; //TODO memory size for this
+	const char *influx_db;
 	const char *influx_auth;
 } configuration;
 
@@ -47,7 +26,30 @@ typedef struct {
 	unsigned int exhaust_on:1;
 	unsigned int fan_on:1;
 	unsigned int measured:1;
-} properties;
+} properties; //this bitfeild is 45 bits, ie not optimized
+
+
+//timer functions
+int open_timer(int);
+int attach_handler(void);
+void timer_handler(int);
+int get_irl_time(void);
+
+static int ini_handler_func(void *, const char *, const char *, const char *);
+
+//reading sensor functions
+int read_dht22(void);
+int read_light(void);
+int read_soil_moist(void);
+
+//posting data and influxDB functions
+int post_data(const properties *);
+
+
+#define FULL_HOUR ((int)(60/settings.increment_size))
+#define FULL_DAY (24*FULL_HOUR)
+#define FULL_INC (settings.increment_size)
+
 
 configuration settings;
 properties conditions;
