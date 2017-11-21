@@ -127,7 +127,7 @@ int attach_handler(void) {
 
 //####################&&&&&&&&&&&&&&&######################&&&&&&&&&&&&&############# bookmark
 void timer_handler(int signum) {
-	static int count = 0; 
+	static unsigned int count = 0; 
 	char result = 0;
 	
 	//if the current interval count is a prechosen time, preform approriate action
@@ -174,7 +174,7 @@ void timer_handler(int signum) {
 		conditions.measured = 0;
 	}
 	
-	printf("Current increment: %d\n", count);
+	printf("Current increment: %u\n", count);
 	count = count + 1;
 	
 	/* 
@@ -235,18 +235,35 @@ int post_data(const properties *conditions_to_post) {
 	printf("posting data to influxDB\n");
 	CURL *curl;
 	CURLcode result;
+	char str_result = 0;
 	
 	char server_url[64];
-	snprintf(server_url, sizeof server_url, "http://%s/write?db=%s", settings.influx_url, settings.influx_db);	
+	str_result = snprintf(server_url, sizeof server_url, "http://%s/write?db=%s", settings.influx_url, settings.influx_db); 
+	if(str_result < 0) {
+		printf("ERROR: influx url parse overflow or error\n");
+	}
 	printf("Server URL: %s\n",server_url);
 	
-	char *message; //TODO compile message from conditions
+	char message[512];
+	//TODO only update condition when it's been measured
+	str_result = snprintf(message, sizeof message, 
+		"temperature,light_on=%u value=%u \nhumidity,light_on=%u value=%u \nlight,light_on=%u value=%u \nmoisture value=%u",
+		conditions_to_post->light_on, conditions_to_post->temperature,
+		conditions_to_post->light_on, conditions_to_post->humidity,	
+		conditions_to_post->light_on, conditions_to_post->light_level,	
+		conditions_to_post->soil_moisture);
+	if(str_result < 0) {
+		printf("ERROR: influx message error\n");
+		//TODO handle if buffer exceeded
+	}
+	printf("influxDB post: %s\n", message);
+	
 	
 	curl = curl_easy_init();
 	if(curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, server_url);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
-	 
+	
 		result = curl_easy_perform(curl);
 		/* Check for errors */ 
 		if(result != CURLE_OK) {

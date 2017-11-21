@@ -1,4 +1,5 @@
 //main
+//TODO IFNDEF thing
 
 typedef struct {
 	unsigned int dht22_delay;
@@ -17,7 +18,7 @@ typedef struct {
 } configuration;
 
 typedef struct {
-	int tempurature:8;
+	unsigned int temperature:12; //maybe in kelvin, and x10 (eg 37 deg celsius == 3071)
 	unsigned int humidity:8;
 	unsigned int light_level:12;
 	unsigned int soil_moisture:12;
@@ -26,7 +27,7 @@ typedef struct {
 	unsigned int exhaust_on:1;
 	unsigned int fan_on:1;
 	unsigned int measured:1;
-} properties; //this bitfeild is 45 bits, ie not optimized
+} properties; //this bitfeild is 49 bits, ie not optimized
 
 
 //timer functions
