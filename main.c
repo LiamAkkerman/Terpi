@@ -25,7 +25,8 @@ int main(int argc, char *argv[]) {
     } 
 	printf("settings parsed\n");
 	
-	(conditions.measured) = 0;
+	measured_reset(&conditions);
+	//(conditions.measured) = 0;
 
 	//initilize timer 
 	open_timer(1); // lower this for "accelerated time" for debugging
@@ -140,7 +141,11 @@ void timer_handler(int signum) {
 			count = irl_count;
 		}
 	}
-	//TODO make more dynamic, scaling without needed to rewrite
+	/* TODO make more dynamic, scaling without needed to rewrite
+		one possible solution is to make actions and sensors structs within an array of all of the structs.
+		the structs would containing function handlers and timing values.
+		this could also work in conjunction with the strings needed for posting to influx.
+		*/
 	if((count % settings.dht22_delay) == 0) {
 		if(read_dht22() != 0) {
 			printf("ERROR: DHT22 reading failed\n");
@@ -169,9 +174,9 @@ void timer_handler(int signum) {
 	}
 	
 	//update_display();
-	if(conditions.measured) {
+	if(measured_any(&conditions) > 0) {
 		post_data(&conditions);
-		conditions.measured = 0;
+		measured_reset(&conditions);
 	}
 	
 	printf("Current increment: %u\n", count);
@@ -207,25 +212,44 @@ int get_irl_time(void) {
 //reading sensor functions
 int read_dht22(void) {
 	printf("reading DHT22\n");
-	if(!(conditions.measured)) {
-		conditions.measured = 1;
+	if(!conditions.temperature_measured) {
+		conditions.temperature_measured = 1;
+		conditions.humidity_measured = 1;		
 	}
 	
 	return 0;
 }
 int read_light(void) {
 	printf("reading light\n");
-	if(!conditions.measured) {
-		conditions.measured = 1;
+	if(!conditions.light_measured) {
+		conditions.light_measured = 1;
 	}
 	
 	return 0;
 }
 int read_soil_moist(void) {
 	printf("reading soil moisture\n");
-	if(!conditions.measured) {
-		conditions.measured = 1;
+	if(!conditions.moisture_measured) {
+		conditions.moisture_measured = 1;
 	}
+	
+	return 0;
+}
+
+int measured_any(const properties *conditions_to_check) {
+	//check alls properties that can be measured, returns 1 if any have been.
+	
+	int result = 0;
+	result = conditions_to_check->temperature_measured || conditions_to_check->humidity_measured || conditions_to_check->light_measured || conditions_to_check->moisture_measured;
+	return result;
+}
+
+int measured_reset(properties *conditions_to_check) {
+	//force resets measured flags to false
+	conditions_to_check->temperature_measured = 0;
+	conditions_to_check->humidity_measured = 0;
+	conditions_to_check->light_measured = 0;
+	conditions_to_check->moisture_measured = 0;
 	
 	return 0;
 }
@@ -244,15 +268,38 @@ int post_data(const properties *conditions_to_post) {
 	}
 	printf("Server URL: %s\n",server_url);
 	
+	
 	char message[512];
-	//TODO only update condition when it's been measured
-	str_result = snprintf(message, sizeof message, 
-		"temperature,light_on=%u value=%u \nhumidity,light_on=%u value=%u \nlight,light_on=%u value=%u \nmoisture value=%u",
-		conditions_to_post->light_on, conditions_to_post->temperature,
-		conditions_to_post->light_on, conditions_to_post->humidity,	
-		conditions_to_post->light_on, conditions_to_post->light_level,	
-		conditions_to_post->soil_moisture);
-	if(str_result < 0) {
+	memset(message, 0, sizeof(message));
+	char single_message[128]; //might need more?
+	memset(single_message, 0, sizeof(single_message));
+	
+	if(conditions_to_post->temperature_measured > 0) {
+		str_result = snprintf(single_message, sizeof single_message, 
+			"temperature,light_on=%u value=%u\n", 
+			conditions_to_post->light_on, conditions_to_post->temperature);
+		strcat(message, single_message);
+	}
+	if(conditions_to_post->humidity_measured > 0) {
+		str_result = snprintf(single_message, sizeof single_message, 
+			"humidity,light_on=%u value=%u\n", 
+			conditions_to_post->light_on, conditions_to_post->humidity);
+		strcat(message, single_message);
+	}
+	if(conditions_to_post->light_measured > 0) {
+		str_result = snprintf(single_message, sizeof single_message, 
+			"light,light_on=%u value=%u\n", 
+			conditions_to_post->light_on, conditions_to_post->light_level);
+		strcat(message, single_message);
+	}
+	if(conditions_to_post->moisture_measured > 0) {
+		str_result = snprintf(single_message, sizeof single_message, 
+			"moisture value=%u", 
+			conditions_to_post->soil_moisture);
+		strcat(message, single_message);
+	}
+		
+	if(str_result < 0) { //this only checks the last thing but whatever... TODO I guess
 		printf("ERROR: influx message error\n");
 		//TODO handle if buffer exceeded
 	}

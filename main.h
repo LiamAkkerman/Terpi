@@ -26,8 +26,11 @@ typedef struct {
 	unsigned int view_light_on:1;
 	unsigned int exhaust_on:1;
 	unsigned int fan_on:1;
-	unsigned int measured:1;
-} properties; //this bitfeild is 49 bits, ie not optimized
+	unsigned int temperature_measured:1;
+	unsigned int humidity_measured:1;
+	unsigned int light_measured:1;
+	unsigned int moisture_measured:1;
+} properties; //this bitfeild is 52 bits, ie not optimized
 
 
 //timer functions
@@ -44,6 +47,8 @@ int read_light(void);
 int read_soil_moist(void);
 
 //posting data and influxDB functions
+int measured_any(const properties *);
+int measured_reset(properties *);
 int post_data(const properties *);
 
 
