@@ -268,6 +268,8 @@ int post_data(const properties *conditions_to_post) {
 	}
 	printf("Server URL: %s\n",server_url);
 	
+	char influx_auth[64];
+	strcpy(influx_auth, settings.influx_auth);
 	
 	char message[512];
 	memset(message, 0, sizeof(message));
@@ -309,19 +311,17 @@ int post_data(const properties *conditions_to_post) {
 	curl = curl_easy_init();
 	if(curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, server_url);
+		curl_easy_setopt(curl, CURLOPT_USERPWD, influx_auth);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, message);
 	
 		result = curl_easy_perform(curl);
+		printf("curl result: %d\n", result);
 		/* Check for errors */ 
 		if(result != CURLE_OK) {
 			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(result));
 		}
 		
 		curl_easy_cleanup(curl);
-	}
-	
-	//TODO curl authentication
-	
-	
+	}	
 	return 0;
 }
