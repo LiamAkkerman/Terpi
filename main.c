@@ -11,10 +11,12 @@ SmotBot garden control unit
 #include "main.h"
 #include "./inih/ini.h"
 #include "smot_timers.h"
+#include "smot_sensors.h"
 
 
 
-
+configuration settings;
+properties conditions;
 
 int main(int argc, char *argv[]) {
 	printf("program started\n");
@@ -113,19 +115,19 @@ void timer_handler(int signum) {
 		this could also work in conjunction with the strings needed for posting to influx.
 		*/
 	if((count % settings.dht22_delay) == 0) {
-		if(read_dht22() != 0) {
+		if(read_dht22(&conditions) != 0) {
 			printf("ERROR: DHT22 reading failed\n");
 			result = -1;
 		}
 	}
 	if((count % settings.light_sensor_delay) == 0) {
-		if(read_light() != 0) {
+		if(read_light(&conditions) != 0) {
 			printf("ERROR: light reading failed\n");
 			result = -1;
 		}
 	}
 	if((count % settings.soil_sensor_delay) == 0) {
-		if(read_soil_moist() != 0) {
+		if(read_soil_moist(&conditions) != 0) {
 			printf("ERROR: soil moisture reading failed\n");
 			result = -1;
 		}
@@ -158,32 +160,7 @@ void timer_handler(int signum) {
 }
 
 
-//reading sensor functions
-int read_dht22(void) {
-	printf("reading DHT22\n");
-	if(!conditions.temperature_measured) {
-		conditions.temperature_measured = 1;
-		conditions.humidity_measured = 1;		
-	}
-	
-	return 0;
-}
-int read_light(void) {
-	printf("reading light\n");
-	if(!conditions.light_measured) {
-		conditions.light_measured = 1;
-	}
-	
-	return 0;
-}
-int read_soil_moist(void) {
-	printf("reading soil moisture\n");
-	if(!conditions.moisture_measured) {
-		conditions.moisture_measured = 1;
-	}
-	
-	return 0;
-}
+
 
 int measured_any(const properties *conditions_to_check) {
 	//check alls properties that can be measured, returns 1 if any have been.

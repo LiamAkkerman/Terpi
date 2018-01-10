@@ -1,4 +1,5 @@
 
+//timer functions
 int open_timer(int);
 int attach_handler(void);
 void timer_handler(int);

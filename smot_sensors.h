@@ -1,0 +1,8 @@
+
+
+
+
+//reading sensor functions
+int read_dht22(properties *);
+int read_light(properties *);
+int read_soil_moist(properties *);

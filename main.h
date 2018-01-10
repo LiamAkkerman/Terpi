@@ -33,15 +33,9 @@ typedef struct {
 } properties; //this bitfeild is 52 bits, ie not optimized
 
 
-//timer functions
-
-
 static int ini_handler_func(void *, const char *, const char *, const char *);
 
-//reading sensor functions
-int read_dht22(void);
-int read_light(void);
-int read_soil_moist(void);
+void timer_handler(int);
 
 //posting data and influxDB functions
 int measured_any(const properties *);
@@ -54,5 +48,4 @@ int post_data(const properties *);
 #define FULL_INC (settings.increment_size)
 
 
-configuration settings;
-properties conditions;
+
