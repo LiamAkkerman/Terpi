@@ -8,6 +8,9 @@ SmotBot garden control unit
 #include <string.h>
 #include <stdlib.h>
 #include <curl/curl.h>
+#include <wiringPi.h>
+#include <wiringPiSPI.h>
+
 #include "main.h"
 #include "./inih/ini.h"
 #include "smot_timers.h"
@@ -31,6 +34,12 @@ int main(int argc, char *argv[]) {
 	measured_reset(&conditions);
 	//(conditions.measured) = 0;
 
+	//initizilize mcp3008 SPI adc
+	if(startSPI(0) < 0) {
+		printf("ERROR: can't start SPI\n");
+		return -1;
+	}
+	
 	//initilize timer 
 	open_timer(1); // lower this for "accelerated time" for debugging
 	//open_timer(FULL_INC);
@@ -41,6 +50,16 @@ int main(int argc, char *argv[]) {
 	
 	while(1); //TODO make this not so CPU intensive to idle
 	
+}
+
+int startSPI(int spiChannel) {
+	printf("opening SPI channel\n");
+	int result = 0;
+	if((wiringPiSPISetup(spiChannel, 1000000)) < 0) {
+		result = -1;
+	}
+	
+	return result;
 }
 
 static int ini_handler_func(void *user, const char *section, const char *name, const char *value) {

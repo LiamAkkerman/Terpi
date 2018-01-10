@@ -1,6 +1,8 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <wiringPi.h>
+#include <wiringPiSPI.h>
 
 #include "main.h"
 #include "smot_sensors.h"
@@ -34,3 +36,20 @@ int read_soil_moist(properties *conditions) {
 	
 	return 0;
 }
+
+int mcpAnalogRead(int spiChannel, int analogChannel) {
+	int result = 0;
+	
+    if(analogChannel<0 || analogChannel>7) {
+		result = -1;
+	} else {
+		unsigned char buffer[3] = {1}; // start bit		
+		buffer[1] = (analogChannel) << 4;
+		wiringPiSPIDataRW(spiChannel, buffer, 3);
+		//printf("buffer %02X%02X%02X\n", buffer[0], buffer[1], buffer[2]);
+		result = ((buffer[1] & 3 ) << 8) + buffer[2]; // get last 10 bits
+	}
+	
+	return result;
+}
+

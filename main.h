@@ -32,6 +32,7 @@ typedef struct {
 	unsigned int moisture_measured:1;
 } properties; //this bitfeild is 52 bits, ie not optimized
 
+int startSPI(int);
 
 static int ini_handler_func(void *, const char *, const char *, const char *);
 
