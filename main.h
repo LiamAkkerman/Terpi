@@ -15,6 +15,10 @@ typedef struct {
 	const char *influx_url; //TODO memory size for this
 	const char *influx_db;
 	const char *influx_auth;
+	char spi_channel;
+	char light_pin;
+	char soil_pin;
+	char dht_pin;
 } configuration;
 
 typedef struct {

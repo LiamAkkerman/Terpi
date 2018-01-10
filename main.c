@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 	//(conditions.measured) = 0;
 
 	//initizilize mcp3008 SPI adc
-	if(startSPI(0) < 0) {
+	if(startSPI(settings.spi_channel) < 0) {
 		printf("ERROR: can't start SPI\n");
 		return -1;
 	}
@@ -52,10 +52,10 @@ int main(int argc, char *argv[]) {
 	
 }
 
-int startSPI(int spiChannel) {
+int startSPI(int spi_channel) {
 	printf("opening SPI channel\n");
 	int result = 0;
-	if((wiringPiSPISetup(spiChannel, 1000000)) < 0) {
+	if((wiringPiSPISetup(spi_channel, 1000000)) < 0) {
 		result = -1;
 	}
 	
@@ -105,6 +105,18 @@ static int ini_handler_func(void *user, const char *section, const char *name, c
 	}
 	else if(MATCH("System", "influx_auth")) {
 		pconfig->influx_auth = strdup(value);
+	}
+	else if(MATCH("System", "spi_channel")) {
+		pconfig->spi_channel = atoi(value);
+	}
+	else if(MATCH("System", "light_pin")) {
+		pconfig->light_pin = atoi(value);
+	}		
+	else if(MATCH("System", "soil_pin")) {
+		pconfig->soil_pin = atoi(value);
+	}
+	else if(MATCH("System", "dht_pin")) {
+		pconfig->dht_pin = atoi(value);
 	}
 	else {
 		return -1;  /* unknown section/name, error */
