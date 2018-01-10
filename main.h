@@ -34,10 +34,7 @@ typedef struct {
 
 
 //timer functions
-int open_timer(int);
-int attach_handler(void);
-void timer_handler(int);
-int get_irl_time(void);
+
 
 static int ini_handler_func(void *, const char *, const char *, const char *);
 
