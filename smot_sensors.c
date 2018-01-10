@@ -21,18 +21,27 @@ int read_dht22(properties *conditions) {
 
 int read_light(properties *conditions) {
 	printf("reading light\n");
+	int light_level = 0;
 	if(!conditions->light_measured) {
 		conditions->light_measured = 1;
 	}
+	
+	light_level = mcpAnalogRead(0,0);
+	conditions->light_level = light_level;
+	
 	
 	return 0;
 }
 
 int read_soil_moist(properties *conditions) {
 	printf("reading soil moisture\n");
+	int soil_moisture = 0;
 	if(!conditions->moisture_measured) {
 		conditions->moisture_measured = 1;
 	}
+	
+	soil_moisture = mcpAnalogRead(0,1);
+	conditions->soil_moisture = soil_moisture;
 	
 	return 0;
 }
