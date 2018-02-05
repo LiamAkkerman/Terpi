@@ -5,7 +5,7 @@
 #include <wiringPiSPI.h>
 
 #include "main.h"
-#include "smot_sensors.h"
+#include "terpi_sensors.h"
 
 extern configuration settings;
 

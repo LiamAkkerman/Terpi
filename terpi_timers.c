@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "smot_timers.h"
+#include "terpi_timers.h"
 
 
 

@@ -1,6 +1,6 @@
 /*
 main.c
-SmotBot garden control unit
+Terpi garden control unit
 */
 
 #include <stdio.h>
@@ -13,8 +13,8 @@ SmotBot garden control unit
 
 #include "main.h"
 #include "./inih/ini.h"
-#include "smot_timers.h"
-#include "smot_sensors.h"
+#include "terpi_timers.h"
+#include "terpi_sensors.h"
 
 
 

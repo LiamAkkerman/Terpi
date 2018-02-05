@@ -1,9 +1,7 @@
-# SmotBot
+# Terpi
 A control system running on a Raspberry Pi for an indoor greenhouse.
 
 Google sheet with more info for now: [link](https://docs.google.com/spreadsheets/d/1uQJ5DEpvZHVcrjyeobdYDgNQlvSdy6Z_13w_meAUTms/edit?usp=sharing)
-
-The name SmotBot is totally temprary. I just can't think of anything better right now.
 
 ### Implmented Features
 none thus far...
@@ -21,7 +19,7 @@ none thus far...
 #### Phase 2
 6. LCD display
 7. Soil mousture sensor
-8. Circulation fan
+8. Curculation fan
 9. View lights
 
 #### Phase 3
@@ -31,10 +29,3 @@ none thus far...
 
 #### Phase 4
 13. Irrigation system
-
-#### Phase X
-14. CO<sub>2</sub> sensor
-15. CO<sub>2</sub> control
-16. Heating
-17. Time-lapse camera
-18. pH sensor
