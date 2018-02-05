@@ -15,6 +15,10 @@ typedef struct {
 	const char *influx_url; //TODO memory size for this
 	const char *influx_db;
 	const char *influx_auth;
+	char spi_channel;
+	char light_pin;
+	char soil_pin;
+	char dht_pin;
 } configuration;
 
 typedef struct {
@@ -32,19 +36,11 @@ typedef struct {
 	unsigned int moisture_measured:1;
 } properties; //this bitfeild is 52 bits, ie not optimized
 
-
-//timer functions
-int open_timer(int);
-int attach_handler(void);
-void timer_handler(int);
-int get_irl_time(void);
+int startSPI(int);
 
 static int ini_handler_func(void *, const char *, const char *, const char *);
 
-//reading sensor functions
-int read_dht22(void);
-int read_light(void);
-int read_soil_moist(void);
+void timer_handler(int);
 
 //posting data and influxDB functions
 int measured_any(const properties *);
@@ -57,5 +53,4 @@ int post_data(const properties *);
 #define FULL_INC (settings.increment_size)
 
 
-configuration settings;
-properties conditions;
+
