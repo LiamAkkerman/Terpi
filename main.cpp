@@ -12,10 +12,10 @@ Terpi garden control unit
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 
-#include "main.h"
+#include "main.hpp"
 #include "./inih/ini.h"
-#include "terpi_timers.h"
-#include "terpi_sensors.h"
+#include "terpi_timers.hpp"
+#include "terpi_sensors.hpp"
 
 
 

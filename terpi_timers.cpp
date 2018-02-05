@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string.h>
 
-#include "terpi_timers.h"
+#include "terpi_timers.hpp"
 
 
 

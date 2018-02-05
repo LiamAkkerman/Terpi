@@ -5,8 +5,8 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 
-#include "main.h"
-#include "terpi_sensors.h"
+#include "main.hpp"
+#include "terpi_sensors.hpp"
 
 extern configuration settings;
 
