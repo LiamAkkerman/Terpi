@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <iostream>
 #include <unistd.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -11,7 +12,7 @@ extern configuration settings;
 
 //reading sensor functions
 int read_dht22(properties *conditions) {
-	printf("reading DHT22\n");
+	std::cout << "reading DHT22" << std::endl;
 	if(!conditions->temperature_measured) {
 		conditions->temperature_measured = 1;
 		conditions->humidity_measured = 1;		
@@ -21,7 +22,7 @@ int read_dht22(properties *conditions) {
 }
 
 int read_light(properties *conditions) {
-	printf("reading light\n");
+	std::cout << "reading light" << std::endl;
 	int light_level = 0;
 	if(!conditions->light_measured) {
 		conditions->light_measured = 1;
@@ -35,7 +36,7 @@ int read_light(properties *conditions) {
 }
 
 int read_soil_moist(properties *conditions) {
-	printf("reading soil moisture\n");
+	std::cout << "reading soil moisture" << std::endl;
 	int soil_moisture = 0;
 	if(!conditions->moisture_measured) {
 		conditions->moisture_measured = 1;

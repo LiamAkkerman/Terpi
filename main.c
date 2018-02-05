@@ -3,7 +3,8 @@ main.c
 Terpi garden control unit
 */
 
-#include <stdio.h>
+#include <stdio.h> //TODO possibly depreciated because of iostream, in all files
+#include <iostream>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -22,30 +23,30 @@ configuration settings;
 properties conditions;
 
 int main(int argc, char *argv[]) {
-	printf("program started\n");
+	std::cout << "program started" << std::endl;
 	
 	//read time settings from settings file
 	if(ini_parse("settings.ini", ini_handler_func, &settings) < 0) {
-		printf("ERROR: can't load 'settings.ini'\n");
+		std::cout << "ERROR: can't load 'settings.ini'" << std::endl;
 		return -1;
     } 
-	printf("settings parsed\n");
+	std::cout << "settings parsed" << std::endl;
 	
 	measured_reset(&conditions);
 	//(conditions.measured) = 0;
 
 	//initizilize mcp3008 SPI adc
 	if(startSPI(settings.spi_channel) < 0) {
-		printf("ERROR: can't start SPI\n");
+		std::cout << "ERROR: can't start SPI" << std::endl;
 		return -1;
 	}
 	
 	//initilize timer 
 	open_timer(1); // lower this for "accelerated time" for debugging
 	//open_timer(FULL_INC);
-	printf("timer opened\n");
+	std::cout << "timer opened" << std::endl;
 	attach_handler();
-	printf("timer function attached\n");
+	std::cout << "timer function attached" << std::endl;
 	
 	
 	while(1); //TODO make this not so CPU intensive to idle
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
 }
 
 int startSPI(int spi_channel) {
-	printf("opening SPI channel\n");
+	std::cout << "opening SPI channel" << std::endl;
 	int result = 0;
 	if((wiringPiSPISetup(spi_channel, 1000000)) < 0) {
 		result = -1;
@@ -134,7 +135,7 @@ void timer_handler(int signum) {
 	if((count == 0) || (count == (3*FULL_DAY))) {
 		int irl_count = get_irl_time(settings.increment_size);
 		if(irl_count < 0) {
-			printf("ERROR: system clock time failed\n");
+			std::cout << "ERROR: system clock time failed" << std::endl;
 			result = -1;
 		} else {
 			count = irl_count;
@@ -147,19 +148,19 @@ void timer_handler(int signum) {
 		*/
 	if((count % settings.dht22_delay) == 0) {
 		if(read_dht22(&conditions) != 0) {
-			printf("ERROR: DHT22 reading failed\n");
+			std::cout << "ERROR: DHT22 reading failed" << std::endl;
 			result = -1;
 		}
 	}
 	if((count % settings.light_sensor_delay) == 0) {
 		if(read_light(&conditions) != 0) {
-			printf("ERROR: light reading failed\n");
+			std::cout << "ERROR: light reading failed" << std::endl;
 			result = -1;
 		}
 	}
 	if((count % settings.soil_sensor_delay) == 0) {
 		if(read_soil_moist(&conditions) != 0) {
-			printf("ERROR: soil moisture reading failed\n");
+			std::cout << "ERROR: soil moisture reading failed" << std::endl;
 			result = -1;
 		}
 	}
@@ -178,7 +179,7 @@ void timer_handler(int signum) {
 		measured_reset(&conditions);
 	}
 	
-	printf("-- Current increment: %u --\n", count);
+	std::cout << "-- Current increment: " << count << " --" << std::endl;
 	count = count + 1;
 	
 	/* 
@@ -213,7 +214,7 @@ int measured_reset(properties *conditions_to_check) {
 
 //posting data and influxDB function
 int post_data(const properties *conditions_to_post) {
-	printf("posting data to influxDB\n");
+	std::cout << "posting data to influxDB" << std::endl;
 	CURL *curl;
 	CURLcode curl_code;
 	long http_code;
@@ -222,7 +223,7 @@ int post_data(const properties *conditions_to_post) {
 	char server_url[64];
 	str_result = snprintf(server_url, sizeof server_url, "http://%s/write?db=%s", settings.influx_url, settings.influx_db); 
 	if(str_result < 0) {
-		printf("ERROR: influx url parse overflow or error\n");
+		std::cout << "ERROR: influx url parse overflow or error" << std::endl;
 	}	
 	
 	char influx_auth[64];
@@ -259,7 +260,7 @@ int post_data(const properties *conditions_to_post) {
 	}
 		
 	if(str_result < 0) { //this only checks the last thing but whatever... TODO I guess
-		printf("ERROR: influx message errors %d\n", str_result);
+		std::cout << "ERROR: influx message errors " << str_result << std::endl;
 		//TODO handle if buffer exceeded
 	}
 	
@@ -275,37 +276,37 @@ int post_data(const properties *conditions_to_post) {
 		/* Check for errors */ 
 		if(curl_code != CURLE_OK) {
 			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(curl_code));
-			printf("Server URL: %s\n",server_url);
-			printf("influxDB post: %s\n", message);
+			std::cout << "Server URL: " << server_url << std::endl;
+			std::cout << "influxDB post: " << message << std::endl;
 		}
 		curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &http_code);
 		if(curl_code != CURLE_ABORTED_BY_CALLBACK) {
 			switch(http_code) {
 				case 0 :
-					printf("HTTP %d: curl failed.\n");
+					std::cout << "HTTP " << http_code << ": curl failed." << std::endl;
 					break;
 				case 204 :
 					//influx sucsess, add message if you need even further debugging
 					break;
 				case 400 :
-					printf("HTTP %d: Unacceptable request. Can occur with a Line Protocol "
+					std::cout << "HTTP " << http_code << ": Unacceptable request. Can occur with a Line Protocol "
 						"syntax error or if a user attempts to write values to a "
-						"field that previously accepted a different value type.\n", http_code);
+						"field that previously accepted a different value type." << std::endl;
 					break;
 				case 401 : 
-					printf("HTTP %d: Unacceptable request. Can occur with "
-					"invalid authentication credentials.\n", http_code);
+					std::cout << "HTTP " << http_code << ": Unacceptable request. Can occur with "
+					"invalid authentication credentials." << std::endl;
 					break;
 				case 404 :
-					printf("HTTP %d: Unacceptable request. Can occur if a user attempts to "
-						"write to a database that does not exist.\n", http_code);
+					std::cout << "HTTP " << http_code << ": Unacceptable request. Can occur if a user attempts to "
+						"write to a database that does not exist." << std::endl;
 					break;
 				case 500 :
-					printf("HTTP %d: The system is overloaded or significantly impaired. Can occur if "
-					"a user attempts to write to a retention policy that does not exist.\n", http_code);
+					std::cout << "HTTP " << http_code << ": The system is overloaded or significantly impaired. Can occur if "
+					"a user attempts to write to a retention policy that does not exist." << std::endl;
 					break;
 				default :
-					printf("HTTP %d: Unknown HTTP error.\n", http_code);
+					std::cout << "HTTP " << http_code << ": Unknown HTTP error." << std::endl;
 					break;
 			}
 			

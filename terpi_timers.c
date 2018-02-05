@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <stdio.h>
+#include <iostream>
 #include <string.h>
 
 #include "terpi_timers.h"
@@ -22,7 +23,7 @@ int open_timer(int delay_number) {
 	
 	/* Start a virtual timer. It counts down whenever this process is executing. */
 	if(setitimer(ITIMER_VIRTUAL, &timer, NULL) != 0) {
-		printf("ERROR: opening timer failed\n");
+		std::cout << "ERROR: opening timer failed" << std::endl;
 		return -1; //TODO I'd rather have only one final return
 	}
 	
@@ -38,7 +39,7 @@ int attach_handler(void) {
 	//calls the referanced function
 	sa.sa_handler = &timer_handler;
 	if(sigaction(SIGVTALRM, &sa, NULL) != 0) { 
-		printf("ERROR: handler failed\n");
+		std::cout << "ERROR: handler failed" << std::endl;
 		return -1; //TODO I'd rather have only one final return
 	}
 	
