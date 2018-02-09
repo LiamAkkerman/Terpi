@@ -2,7 +2,6 @@
 #include <time.h> 
 #include <signal.h>
 #include <sys/time.h>
-#include <stdio.h>
 #include <iostream>
 #include <string.h>
 
@@ -10,7 +9,7 @@
 
 
 
-//TODO change to accept prevous itimerval struct as argument
+//TODO change to accept previous itimerval struct as argument
 int open_timer(int delay_number) {
 	struct itimerval timer;
 	
@@ -30,13 +29,13 @@ int open_timer(int delay_number) {
 	return 0;
 }
 
-//TODO change to accept prevous sigaction struct as argument
+//TODO change to accept previous sigaction struct as argument
 int attach_handler(void) {
 	//assigns an action to occur when timer expires
 	struct sigaction sa;
-	memset(&sa, 0, sizeof(sa)); //I don't actaully know what this does, but it's supposed to be used
+	memset(&sa, 0, sizeof(sa)); //I don't actually know what this does, but it's supposed to be used
 	
-	//calls the referanced function
+	//calls the referenced function
 	sa.sa_handler = &timer_handler;
 	if(sigaction(SIGVTALRM, &sa, NULL) != 0) { 
 		std::cout << "ERROR: handler failed" << std::endl;

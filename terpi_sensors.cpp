@@ -1,7 +1,6 @@
 
-#include <stdio.h>
 #include <iostream>
-#include <unistd.h>
+
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 

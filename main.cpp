@@ -3,11 +3,10 @@ main.c
 Terpi garden control unit
 */
 
-#include <stdio.h> //TODO possibly depreciated because of iostream, in all files
 #include <iostream>
-#include <unistd.h>
 #include <string.h>
-#include <stdlib.h>
+#include <cstdlib>
+
 #include <curl/curl.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -35,13 +34,13 @@ int main(int argc, char *argv[]) {
 	measured_reset(&conditions);
 	//(conditions.measured) = 0;
 
-	//initizilize mcp3008 SPI adc
+	//initialize mcp3008 SPI adc
 	if(startSPI(settings.spi_channel) < 0) {
 		std::cout << "ERROR: can't start SPI" << std::endl;
 		return -1;
 	}
 	
-	//initilize timer 
+	//initialize timer 
 	open_timer(1); // lower this for "accelerated time" for debugging
 	//open_timer(FULL_INC);
 	std::cout << "timer opened" << std::endl;
