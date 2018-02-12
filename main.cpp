@@ -15,6 +15,7 @@ Terpi garden control unit
 #include "./inih/ini.h"
 #include "terpi_timers.hpp"
 #include "terpi_sensors.hpp"
+#include "sensor.hpp"
 
 
 
@@ -23,6 +24,12 @@ properties conditions;
 
 int main(int argc, char *argv[]) {
 	std::cout << "program started" << std::endl;
+	
+	
+	auto str_test = std::string("farts");
+	auto sen_test = Sensor(60, str_test, &read_dht22);
+	
+	
 	
 	//read time settings from settings file
 	if(ini_parse("settings.ini", ini_handler_func, &settings) < 0) {
@@ -146,10 +153,10 @@ void timer_handler(int signum) {
 		this could also work in conjunction with the strings needed for posting to influx.
 		*/
 	if((count % settings.dht22_delay) == 0) {
-		if(read_dht22(&conditions) != 0) {
+		/*if(read_dht22(&conditions) != 0) {
 			std::cout << "ERROR: DHT22 reading failed" << std::endl;
 			result = -1;
-		}
+		} */
 	}
 	if((count % settings.light_sensor_delay) == 0) {
 		if(read_light(&conditions) != 0) {

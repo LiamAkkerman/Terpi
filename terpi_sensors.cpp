@@ -10,6 +10,8 @@
 extern configuration settings;
 
 //reading sensor functions
+int read_dht22() { return 0; }
+/*	
 int read_dht22(properties *conditions) {
 	std::cout << "reading DHT22" << std::endl;
 	if(!conditions->temperature_measured) {
@@ -18,7 +20,7 @@ int read_dht22(properties *conditions) {
 	}
 	
 	return 0;
-}
+} */
 
 int read_light(properties *conditions) {
 	std::cout << "reading light" << std::endl;
