@@ -1,5 +1,7 @@
 //main
-//TODO IFNDEF thing
+
+#ifndef MAIN_H
+#define MAIN_H
 
 typedef struct {
 	unsigned int dht22_delay;
@@ -52,5 +54,5 @@ int post_data(const properties *);
 #define FULL_DAY (24*FULL_HOUR)
 #define FULL_INC (settings.increment_size)
 
-
+#endif
 

@@ -1,4 +1,6 @@
 
+#ifndef TERPI_SENSORS_H
+#define TERPI_SENSORS_H
 
 #include "sensor.hpp" //this feels wrong to have in the header but it made it work...
 
@@ -12,3 +14,4 @@ int mcpAnalogRead(int, int);
 
 int populate_sensors(configuration *, std::vector<Sensor> *);
 
+#endif
