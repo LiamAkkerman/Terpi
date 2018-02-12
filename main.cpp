@@ -6,6 +6,7 @@ Terpi garden control unit
 #include <iostream>
 #include <string.h>
 #include <cstdlib>
+#include <vector>
 
 #include <curl/curl.h>
 #include <wiringPi.h>
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) {
 	
 	
 	//read time settings from settings file
+	//TODO change to C++ inih
 	if(ini_parse("settings.ini", ini_handler_func, &settings) < 0) {
 		std::cout << "ERROR: can't load 'settings.ini'" << std::endl;
 		return -1;
@@ -40,6 +42,10 @@ int main(int argc, char *argv[]) {
 	
 	measured_reset(&conditions);
 	//(conditions.measured) = 0;
+	
+	std::vector<Sensor> sensor_vec;
+	populate_sensors(&settings, &sensor_vec);
+	
 
 	//initialize mcp3008 SPI adc
 	if(startSPI(settings.spi_channel) < 0) {
