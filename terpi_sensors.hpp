@@ -2,8 +2,6 @@
 #ifndef TERPI_SENSORS_H
 #define TERPI_SENSORS_H
 
-#include "sensor.hpp" //this feels wrong to have in the header but it made it work...
-
 //reading sensor functions
 //int read_dht22(properties *);
 int read_dht22();

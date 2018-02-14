@@ -7,16 +7,18 @@ Terpi garden control unit
 #include <string.h>
 #include <cstdlib>
 #include <vector>
+#include <functional>
 
 #include <curl/curl.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 
 #include "main.hpp"
+#include "sensor.hpp"
 #include "./inih/ini.h"
 #include "terpi_timers.hpp"
 #include "terpi_sensors.hpp"
-#include "sensor.hpp"
+
 
 
 
@@ -28,7 +30,7 @@ int main(int argc, char *argv[]) {
 	
 	
 	auto str_test = std::string("farts");
-	auto sen_test = Sensor(60, str_test, &read_dht22);
+	auto sen_test = Sensor(60, str_test, read_dht22);
 	
 	
 	
@@ -46,6 +48,7 @@ int main(int argc, char *argv[]) {
 	std::vector<Sensor> sensor_vec;
 	populate_sensors(&settings, &sensor_vec);
 	
+	//sensor_vec[2].measure_func();
 
 	//initialize mcp3008 SPI adc
 	if(startSPI(settings.spi_channel) < 0) {

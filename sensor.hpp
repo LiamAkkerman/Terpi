@@ -3,8 +3,10 @@
 #define SENSOR_H
 
 
+#define FUNC_TYPE std::function<int()>
+
 class Sensor {
-	typedef int (*func_ptr)();
+	//typedef int (*func_ptr)();
 	//char flags;
 	
 	
@@ -14,10 +16,11 @@ class Sensor {
 		bool measured;
 		const std::string database;
 		
-		func_ptr measure_func; //function pointer to the the function that conducts the measurement
+		std::function<int()> measure_func;
+		//func_ptr measure_func; //function pointer to the the function that conducts the measurement
 		//void (*func_ptr)() measure_func;
 		
-		Sensor(unsigned int, const std::string&, func_ptr);
+		Sensor(unsigned int, const std::string&, const std::function<int()>&);
 };
 
 #endif

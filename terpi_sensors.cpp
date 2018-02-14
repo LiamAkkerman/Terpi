@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <vector>
+#include <functional>
 
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -79,19 +80,19 @@ int populate_sensors(configuration *settings_in, std::vector<Sensor> * vec_ptr_i
 	int result = 0;
 	
 	auto dht_str1 = std::string("temperature");
-	auto dht_temp = Sensor(settings_in->dht22_delay, dht_str1, &read_dht22);	
+	auto dht_temp = Sensor(settings_in->dht22_delay, dht_str1, read_dht22);	
 	vec_ptr_in->push_back(dht_temp);
 	
 	auto dht_str2 = std::string("humidity");
-	auto dht_hum = Sensor(settings_in->dht22_delay, dht_str2, &read_dht22);	
+	auto dht_hum = Sensor(settings_in->dht22_delay, dht_str2, read_dht22);	
 	vec_ptr_in->push_back(dht_hum);
 	
 	auto light_str = std::string("light");
-	auto light = Sensor(settings_in->light_sensor_delay, light_str, &read_dht22);	
+	auto light = Sensor(settings_in->light_sensor_delay, light_str, read_dht22);	
 	vec_ptr_in->push_back(light);
 	
 	auto moist_str = std::string("moisture");
-	auto moist = Sensor(settings_in->soil_sensor_delay, moist_str, &read_dht22);	
+	auto moist = Sensor(settings_in->soil_sensor_delay, moist_str, read_dht22);	
 	vec_ptr_in->push_back(moist);
 	
 	return result;
