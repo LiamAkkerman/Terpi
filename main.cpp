@@ -17,7 +17,6 @@ Terpi garden control unit
 #include "sensor.hpp"
 #include "./inih/ini.h"
 #include "terpi_timers.hpp"
-#include "terpi_sensors.hpp"
 
 
 
@@ -47,9 +46,9 @@ int main(int argc, char *argv[]) {
 	//(conditions.measured) = 0;
 	
 	std::vector<Sensor*> sensor_vec;
-	populate_sensors(&settings, &sensor_vec);
+	//populate_sensors(&settings, &sensor_vec);
 	
-	sensor_vec[2]->measure();
+	//sensor_vec[2]->measure();
 
 	//initialize mcp3008 SPI adc
 	if(startSPI(settings.spi_channel) < 0) {
@@ -169,16 +168,16 @@ void timer_handler(int signum) {
 		} */
 	}
 	if((count % settings.light_sensor_delay) == 0) {
-		if(read_light(&conditions) != 0) {
+		/* if(read_light(&conditions) != 0) {
 			std::cout << "ERROR: light reading failed" << std::endl;
 			result = -1;
-		}
+		} */
 	}
 	if((count % settings.soil_sensor_delay) == 0) {
-		if(read_soil_moist(&conditions) != 0) {
+		/* if(read_soil_moist(&conditions) != 0) {
 			std::cout << "ERROR: soil moisture reading failed" << std::endl;
 			result = -1;
-		}
+		} */
 	}
 	if((count % FULL_DAY) == settings.light_on_time) {
 		//turn lights on
