@@ -15,6 +15,7 @@ Terpi garden control unit
 
 #include "main.hpp"
 #include "sensor.hpp"
+#include "sensor_vec.hpp"
 #include "./inih/ini.h"
 #include "terpi_timers.hpp"
 
@@ -45,10 +46,9 @@ int main(int argc, char *argv[]) {
 	measured_reset(&conditions);
 	//(conditions.measured) = 0;
 	
-	std::vector<Sensor*> sensor_vec;
-	//populate_sensors(&settings, &sensor_vec);
 	
-	//sensor_vec[2]->measure();
+	auto sensors = Sensor_Vec(&settings);
+	
 
 	//initialize mcp3008 SPI adc
 	if(startSPI(settings.spi_channel) < 0) {
