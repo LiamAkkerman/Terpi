@@ -30,7 +30,8 @@ int main(int argc, char *argv[]) {
 	
 	
 	auto str_test = std::string("farts");
-	auto sen_test = Sensor(60, str_test, read_dht22);
+	//auto sen_test = Sensor(60, str_test, read_dht22);
+	auto sen_test = Sensor(60, str_test, 22, Sen_Type::dht22);
 	
 	
 	
@@ -45,10 +46,10 @@ int main(int argc, char *argv[]) {
 	measured_reset(&conditions);
 	//(conditions.measured) = 0;
 	
-	std::vector<Sensor> sensor_vec;
+	std::vector<Sensor*> sensor_vec;
 	populate_sensors(&settings, &sensor_vec);
 	
-	//sensor_vec[2].measure_func();
+	sensor_vec[2]->measure();
 
 	//initialize mcp3008 SPI adc
 	if(startSPI(settings.spi_channel) < 0) {

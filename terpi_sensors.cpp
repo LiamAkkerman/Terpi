@@ -75,10 +75,14 @@ int mcpAnalogRead(int spi_channel, int analogChannel) {
 
 
 //populates a vector with all of the Sensor objects
-int populate_sensors(configuration *settings_in, std::vector<Sensor> *vec_ptr_in) {
+int populate_sensors(configuration *settings_in, std::vector<Sensor*> *vec_ptr_in) {
 	int result = 0;
 	
 	auto dht_str1 = std::string("temperature");
+	auto dht_temp = Sensor(settings_in->dht22_delay, dht_str1, 22, Sen_Type::dht22);	
+	vec_ptr_in->push_back(&dht_temp);
+	
+	/* auto dht_str1 = std::string("temperature");
 	auto dht_temp = Sensor(settings_in->dht22_delay, dht_str1, read_dht22);	
 	vec_ptr_in->push_back(dht_temp);
 	
@@ -92,7 +96,7 @@ int populate_sensors(configuration *settings_in, std::vector<Sensor> *vec_ptr_in
 	
 	auto moist_str = std::string("moisture");
 	auto moist = Sensor(settings_in->soil_sensor_delay, moist_str, read_soil_moist);	
-	vec_ptr_in->push_back(moist);
+	vec_ptr_in->push_back(moist); */
 	
 	return result;
 } 

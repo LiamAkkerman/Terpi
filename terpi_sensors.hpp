@@ -10,6 +10,6 @@ int read_soil_moist(properties *);
 
 int mcpAnalogRead(int, int);
 
-int populate_sensors(configuration *, std::vector<Sensor> *);
+int populate_sensors(configuration *, std::vector<Sensor*> *);
 
 #endif
