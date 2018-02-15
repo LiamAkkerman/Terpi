@@ -19,6 +19,7 @@ Sensor::Sensor(unsigned int delay_in, const std::string& str_in, char pin_in, Se
 	
 }
 
+//TODO maybe there's a better way than two constructors
 Sensor::Sensor(unsigned int delay_in, const std::string& str_in, char pin_in, Sen_Type type_in, char channel_in) 
 	: database(str_in)  {
 	delay = delay_in;

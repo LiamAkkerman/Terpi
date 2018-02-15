@@ -1,69 +1,39 @@
 
 #include <iostream>
-#include <string.h>
+#include <string>
 #include <vector>
 
 #include <curl/curl.h>
 
-#include "main.hpp"
+#include "settings.hpp"
 #include "sensor.hpp"
 #include "sensor_vec.hpp"
 #include "influx.hpp"
 
-extern configuration settings;
 
 //posting data and influxDB function
-int post_data(const properties *conditions_to_post) {
+int post_data(const Sensor_Vec *vec_obj, const influx_settings* settings) {
 	std::cout << "posting data to influxDB" << std::endl;
 	CURL *curl;
 	CURLcode curl_code;
 	long http_code;
 	char str_result = 0;
 	
-	char server_url[64];
-	str_result = snprintf(server_url, sizeof server_url, "http://%s/write?db=%s", settings.influx_url, settings.influx_db); 
-	if(str_result < 0) {
-		std::cout << "ERROR: influx url parse overflow or error" << std::endl;
-	}	
+	auto server_url = std::string();
+	server_url = "http://" + settings->influx_url + "/write?db=" + settings->influx_db; 
 	
-	char influx_auth[64];
-	strcpy(influx_auth, settings.influx_auth);
+	auto influx_auth = settings->influx_auth;
 	
-	char message[512];
-	memset(message, 0, sizeof(message));
-	char single_message[128]; //might need more?
-	memset(single_message, 0, sizeof(single_message));
+	auto message = std::string();
 	
-	if(conditions_to_post->temperature_measured > 0) {
-		str_result += snprintf(single_message, sizeof single_message, 
-			"temperature,light_on=%u value=%u\n", 
-			conditions_to_post->light_on, conditions_to_post->temperature);
-		strcat(message, single_message);
-	}
-	if(conditions_to_post->humidity_measured > 0) {
-		str_result += snprintf(single_message, sizeof single_message, 
-			"humidity,light_on=%u value=%u\n", 
-			conditions_to_post->light_on, conditions_to_post->humidity);
-		strcat(message, single_message);
-	}
-	if(conditions_to_post->light_measured > 0) {
-		str_result += snprintf(single_message, sizeof single_message, 
-			"light,light_on=%u value=%u\n", 
-			conditions_to_post->light_on, conditions_to_post->light_level);
-		strcat(message, single_message);
-	}
-	if(conditions_to_post->moisture_measured > 0) {
-		str_result += snprintf(single_message, sizeof single_message, 
-			"moisture value=%u", 
-			conditions_to_post->soil_moisture);
-		strcat(message, single_message);
-	}
-		
-	if(str_result < 0) { //this only checks the last thing but whatever... TODO I guess
-		std::cout << "ERROR: influx message errors " << str_result << std::endl;
-		//TODO handle if buffer exceeded
+	for (const auto& i : vec_obj->vec) {
+		if(i->measured == 1) {
+			message += i->database + ", value=" + std::to_string(i->value) + "\n";
+		}
 	}
 	
+	std::cout << message << std::endl;
+
 	
 	curl = curl_easy_init();
 	if(curl) {

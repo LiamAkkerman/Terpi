@@ -4,26 +4,28 @@
 #include <vector>
 
 #include "sensor.hpp"
-#include "main.hpp"
+#include "./inih/INIReader.h"
+#include "settings.hpp"
+
 #include "sensor_vec.hpp"
 
 
-Sensor_Vec::Sensor_Vec(const configuration *settings_in) {
+Sensor_Vec::Sensor_Vec(const time_settings *t_set, const pin_settings *p_set) {
 	
 	auto dht_str1 = std::string("temperature");
-	auto dht_temp = Sensor(settings_in->dht22_delay, dht_str1, settings_in->dht_pin, Sen_Type::dht22);	
+	auto dht_temp = Sensor(t_set->dht22_delay, dht_str1, p_set->dht_pin, Sen_Type::dht22);	
 	vec.push_back(&dht_temp);
 	
 	auto dht_str2 = std::string("humidity");
-	auto dht_hum = Sensor(settings_in->dht22_delay, dht_str2, settings_in->dht_pin, Sen_Type::dht22);	
+	auto dht_hum = Sensor(t_set->dht22_delay, dht_str2, p_set->dht_pin, Sen_Type::dht22);	
 	vec.push_back(&dht_hum);
 	
 	auto light_str = std::string("light");
-	auto light = Sensor(settings_in->light_sensor_delay, light_str, settings_in->light_pin, Sen_Type::light);	
+	auto light = Sensor(t_set->light_delay, light_str, p_set->light_pin, Sen_Type::light);	
 	vec.push_back(&light);
 	
 	auto moist_str = std::string("moisture");
-	auto moist = Sensor(settings_in->soil_sensor_delay, moist_str, settings_in->soil_pin, Sen_Type::soil);	
+	auto moist = Sensor(t_set->soil_delay, moist_str, p_set->soil_pin, Sen_Type::soil);	
 	vec.push_back(&moist);
 	
 }
