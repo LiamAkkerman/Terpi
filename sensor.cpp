@@ -14,9 +14,8 @@ Sensor::Sensor(unsigned int delay_in, char pin_in, const std::string& str_in)
 	pin{pin_in},
 	database{str_in},
 	value{0},
-	measured{0} { 
-		std::cout << "sensor made" << std::endl;
-	}
+	measured{0} {
+}
 
 int Dht22::read_dht22() {
 	std::cout << "reading DHT22" << std::endl;
@@ -26,6 +25,18 @@ int Dht22::read_dht22() {
 	
 	return 0;
 }
+
+char Dht22::type() const {
+	char result = -1;
+	if(database[0] == 't') {
+		result = 0;
+	}
+	else if(database[0] == 'h') {
+		result = 1;
+	}
+	
+	return result;
+}	
 
 int LightSen::read_light() {
 	std::cout << "reading light" << std::endl;

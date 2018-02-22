@@ -24,12 +24,13 @@ class Sensor {
 };
 
 class Dht22 : public Sensor {
+	char type() const;
 	int read_dht22();
 	
 	public:
 		int measure() { return read_dht22(); }
 		
-		Dht22(unsigned int delay_in, char pin_in) : Sensor{delay_in, pin_in, "temperature"} {} 
+		Dht22(unsigned int delay_in, char pin_in, const std::string& str_in) : Sensor{delay_in, pin_in, str_in} {}
 		~Dht22() = default;
 };
 
