@@ -3,19 +3,12 @@
 #define SENSOR_H
 
 
-//TODO polymorphism
-
 //enum class Sen_Type {dht22, light, soil};
 
-class Sensor {
-	char pin;
-	char channel; //for SPI or i2c
-	//Sen_Type type;
-	
-	
-	int read_light();
-	int read_soil();
-	int mcpAnalogRead(int, int);
+class Sensor {	
+	protected:
+		char pin;
+		char channel; //for SPI or i2c
 	
 	public:
 		unsigned int delay;
@@ -25,8 +18,6 @@ class Sensor {
 		
 		virtual int measure() =0;
 		
-		//Sensor(unsigned int, const std::string&, char, Sen_Type);
-		//Sensor(unsigned int, const std::string&, char, Sen_Type, char);
 		Sensor(unsigned int, char, const std::string&);
 		//Sensor(const Sensor&);
 		~Sensor() = default;
@@ -40,6 +31,35 @@ class Dht22 : public Sensor {
 		
 		Dht22(unsigned int delay_in, char pin_in) : Sensor{delay_in, pin_in, "temperature"} {} 
 		~Dht22() = default;
+};
+
+class Analog : public Sensor {
+	protected:
+		int mcpAnalogRead(int, int);
+	
+	public:
+		Analog(unsigned int delay_in, char pin_in, const std::string& str_in) : Sensor{delay_in, pin_in, str_in} {}
+		~Analog() = default;
+};
+
+class LightSen : public Analog {
+	int read_light();
+	
+	public:
+		int measure() { return read_light(); }
+		
+		LightSen(unsigned int delay_in, char pin_in) : Analog{delay_in, pin_in, "light"} {} 
+		~LightSen() = default;
+};
+
+class MoistSen : public Analog {
+	int read_moist();
+	
+	public:
+		int measure() { return read_moist(); }
+		
+		MoistSen(unsigned int delay_in, char pin_in) : Analog{delay_in, pin_in, "moisture"} {} 
+		~MoistSen() = default;
 };
 
 #endif

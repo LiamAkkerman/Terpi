@@ -43,8 +43,9 @@ int main(int argc, char *argv[]) {
 	
 	auto sensors = Sensor_Vec(&t_set, &p_set);
 	std::cout << "vector made" << std::endl;
-	sensors[0].measure();
 	
+	sensors[0].measure(); //for testing
+	sensors[1].measure();
 	
 	
 	//initialize mcp3008 SPI adc

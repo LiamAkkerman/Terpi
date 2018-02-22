@@ -11,6 +11,7 @@ class Sensor_Vec {
 		Sensor& operator[](int);
 		
 		Sensor_Vec(const time_settings *, const pin_settings *);
+		//~Sensor_Vec(); //TODO
 };
 
 

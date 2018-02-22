@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "sensor.hpp"
-//#include "./inih/INIReader.h"
 #include "settings.hpp"
 
 #include "sensor_vec.hpp"
@@ -13,25 +12,15 @@
 Sensor_Vec::Sensor_Vec(const time_settings *t_set, const pin_settings *p_set) {
 	std::cout << "making vector" << std::endl;
 	
-	Sensor *dht_test = new Dht22(t_set->dht22_delay, p_set->dht_pin);
-	vec.push_back(dht_test);
+	//TODO use smart pointers
+	Sensor *dht22_sen = new Dht22(t_set->dht22_delay, p_set->dht_pin); //does not work with auto b/c polymorphism I think
+	vec.push_back(dht22_sen);
 	
-	/* auto dht_str1 = std::string("temperature");
-	auto dht_temp = Sensor(t_set->dht22_delay, dht_str1, p_set->dht_pin, Sen_Type::dht22);	
-	vec.push_back(&dht_temp);
+	Sensor *light_sen = new LightSen(t_set->light_delay, p_set->light_pin);
+	vec.push_back(light_sen);
 	
-	auto dht_str2 = std::string("humidity");
-	auto dht_hum = Sensor(t_set->dht22_delay, dht_str2, p_set->dht_pin, Sen_Type::dht22);	
-	vec.push_back(&dht_hum);
-	
-	auto light_str = std::string("light");
-	auto light = Sensor(t_set->light_delay, light_str, p_set->light_pin, Sen_Type::light);	
-	vec.push_back(&light);
-	
-	auto moist_str = std::string("moisture");
-	auto moist = Sensor(t_set->soil_delay, moist_str, p_set->soil_pin, Sen_Type::soil);	
-	vec.push_back(&moist); */
-	
+	Sensor *moist_sen = new MoistSen(t_set->soil_delay, p_set->soil_pin);
+	vec.push_back(moist_sen);	
 }
 
 Sensor& Sensor_Vec::operator[](int i) {
