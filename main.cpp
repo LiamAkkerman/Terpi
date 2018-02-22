@@ -7,6 +7,7 @@ Terpi garden control unit
 #include <string.h>
 #include <cstdlib>
 #include <vector>
+#include <memory>
 
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
