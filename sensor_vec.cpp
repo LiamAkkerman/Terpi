@@ -4,15 +4,19 @@
 #include <vector>
 
 #include "sensor.hpp"
-#include "./inih/INIReader.h"
+//#include "./inih/INIReader.h"
 #include "settings.hpp"
 
 #include "sensor_vec.hpp"
 
 
 Sensor_Vec::Sensor_Vec(const time_settings *t_set, const pin_settings *p_set) {
+	std::cout << "making vector" << std::endl;
 	
-	auto dht_str1 = std::string("temperature");
+	Sensor *dht_test = new Dht22(t_set->dht22_delay, p_set->dht_pin);
+	vec.push_back(dht_test);
+	
+	/* auto dht_str1 = std::string("temperature");
 	auto dht_temp = Sensor(t_set->dht22_delay, dht_str1, p_set->dht_pin, Sen_Type::dht22);	
 	vec.push_back(&dht_temp);
 	
@@ -26,8 +30,15 @@ Sensor_Vec::Sensor_Vec(const time_settings *t_set, const pin_settings *p_set) {
 	
 	auto moist_str = std::string("moisture");
 	auto moist = Sensor(t_set->soil_delay, moist_str, p_set->soil_pin, Sen_Type::soil);	
-	vec.push_back(&moist);
+	vec.push_back(&moist); */
 	
+}
+
+Sensor& Sensor_Vec::operator[](int i) {
+	if ((i > vec.size()) ||  (i < 0)) {
+		std::cout << "index " << i << " is out of bounds" << std::endl;
+	} 
+	return *vec[i]; 
 }
 
 int Sensor_Vec::reset() {

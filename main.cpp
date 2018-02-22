@@ -26,11 +26,6 @@ int main(int argc, char *argv[]) {
 	std::cout << "program started" << std::endl;
 	
 	
-	auto str_test = std::string("farts");
-	//auto sen_test = Sensor(60, str_test, read_dht22);
-	auto sen_test = Sensor(60, str_test, 22, Sen_Type::dht22);
-	
-	
 	
 	//read time settings from settings file
 	auto reader = INIReader("settings.ini");
@@ -47,8 +42,11 @@ int main(int argc, char *argv[]) {
 	
 	
 	auto sensors = Sensor_Vec(&t_set, &p_set);
+	std::cout << "vector made" << std::endl;
+	sensors[0].measure();
 	
-
+	
+	
 	//initialize mcp3008 SPI adc
 	if(startSPI(p_set.spi_channel) < 0) {
 		std::cout << "ERROR: can't start SPI" << std::endl;

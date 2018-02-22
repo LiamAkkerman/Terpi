@@ -8,7 +8,7 @@
 
 #include "sensor.hpp"
 
-Sensor::Sensor(unsigned int delay_in, const std::string& str_in, char pin_in, Sen_Type type_in) 
+/*Sensor::Sensor(unsigned int delay_in, const std::string& str_in, char pin_in, Sen_Type type_in) 
 	: database(str_in)  {
 	delay = delay_in;
 	pin = pin_in;
@@ -29,15 +29,32 @@ Sensor::Sensor(unsigned int delay_in, const std::string& str_in, char pin_in, Se
 	measured = 0;
 	channel = channel_in;
 	
-}
+} */
 
-int Sensor::measure() {
+Sensor::Sensor(unsigned int delay_in, char pin_in, const std::string& str_in) 
+	: delay{delay_in},
+	pin{pin_in},
+	database{str_in},
+	value{0},
+	measured{0} { 
+		std::cout << "sensor made" << std::endl;
+	}
+/*	delay = delay_in;
+	pin = pin_in;
+	value = 0;
+	measured = 0;	
+} */
+
+	
+	
+
+/* int Sensor::measure() {
 	std::cout << "measuring" << std::endl;
 	int result = 0;
 	
 	switch(type) {
 		case Sen_Type::dht22 : 
-			value = read_dht22();
+			//value = read_dht22();
 			break;
 		case Sen_Type::light : 
 			value = read_light();
@@ -46,12 +63,12 @@ int Sensor::measure() {
 			value = read_soil();
 			break;
 	}
-		
+	
 	
 	return result;
-}
+} */
 
-int Sensor::read_dht22() {
+int Dht22::read_dht22() {
 	std::cout << "reading DHT22" << std::endl;
 	if(!measured) {
 		measured = 1;		

@@ -8,7 +8,7 @@ class Sensor_Vec {
 		
 		int reset();
 		bool check_measured();
-		//Sensor& operator[](int i) { return vec[i]; }
+		Sensor& operator[](int);
 		
 		Sensor_Vec(const time_settings *, const pin_settings *);
 };
