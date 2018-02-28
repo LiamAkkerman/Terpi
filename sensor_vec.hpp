@@ -4,9 +4,9 @@
 class Sensor_Vec {
 	
 	public :
-		std::vector<std::unique_ptr<Sensor>> vec; 
+		std::vector<std::unique_ptr<Sensor>> vec; //vectors store elements in the heap iirc, so is a pointer necessary?
 		
-		int reset();
+		int reset_measured();
 		bool check_measured();
 		Sensor& operator[](int);
 		

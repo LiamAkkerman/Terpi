@@ -29,7 +29,9 @@ int post_data(const Sensor_Vec *vec_obj, const influx_settings* settings) {
 	
 	for (const auto& i : vec_obj->vec) {
 		if(i->measured == 1) {
-			message += i->database + ", value=" + std::to_string(i->value) + "\n";
+			for(int j = 0; j < i->database_vec.size(); j++) {
+				message += i->database_vec[j] + ", value=" + std::to_string(i->value_vec[j]) + "\n";
+			}
 		}
 	}
 	

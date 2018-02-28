@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <vector>
 
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -9,12 +10,51 @@
 #include "sensor.hpp"
 
 
-Sensor::Sensor(unsigned int delay_in, char pin_in, const std::string& str_in) 
-	: delay{delay_in},
+Sensor::Sensor(unsigned int delay_in, char pin_in) : 
+	delay{delay_in},
 	pin{pin_in},
-	database{str_in},
-	value{0},
-	measured{0} {
+	measured{false} {
+}
+
+Analog::Analog(unsigned int delay_in, char pin_in) :
+	Sensor{delay_in, pin_in} {
+}
+
+LightSen::LightSen(unsigned int delay_in, char pin_in) :
+	Analog{delay_in, pin_in} {
+	
+	add_database("light");
+} 
+
+MoistSen::MoistSen(unsigned int delay_in, char pin_in) :
+	Analog{delay_in, pin_in} {
+	
+	add_database("moisture");
+} 
+
+Dht22::Dht22(unsigned int delay_in, char pin_in) :
+	Sensor{delay_in, pin_in} {
+	
+	add_database("temperature");
+	add_database("humidity");
+}
+
+
+int Sensor::print(std::ostream& stream) const{
+	stream << "Sensor Print; pin: " << pin << ", delay: " << delay << ", measured: " << measured << std::endl; //"\n";
+	for(int i = 0; i < database_vec.size(); i++) {
+		stream << "    " << database_vec[i] << ":  " << value_vec[i] << "\n";
+	}
+	stream << "\n";
+	
+	return 0;
+}
+
+int Sensor::add_database(const std::string& str_in) {
+	value_vec.push_back(int(0));
+	database_vec.push_back(str_in);
+	
+	return 0;
 }
 
 int Dht22::read_dht22() {
@@ -25,18 +65,6 @@ int Dht22::read_dht22() {
 	
 	return 0;
 }
-
-char Dht22::type() const {
-	char result = -1;
-	if(database[0] == 't') {
-		result = 0;
-	}
-	else if(database[0] == 'h') {
-		result = 1;
-	}
-	
-	return result;
-}	
 
 int LightSen::read_light() {
 	std::cout << "reading light" << std::endl;

@@ -47,8 +47,11 @@ int main(int argc, char *argv[]) {
 	
 	sensors[0].measure(); //for testing
 	sensors[1].measure();
-	sensors[2].measure(); //for testing
-	sensors[3].measure();
+	sensors[2].measure();
+	
+	sensors[0].print(std::cout); //for testing
+	sensors[1].print(std::cout);
+	sensors[2].print(std::cout);
 	
 	
 	//initialize mcp3008 SPI adc
