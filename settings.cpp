@@ -1,3 +1,5 @@
+#include <iostream>
+
 
 #include "./inih/INIReader.h"
 #include "settings.hpp"
@@ -29,9 +31,11 @@ int time_settings::read_ini(INIReader* reader) {
 int pin_settings::read_ini(INIReader* reader) {
 	//TODO add error handling
 	spi_channel = reader->GetInteger("System", "spi_channel", 0);
-	light_pin = reader->GetInteger("System", "light_pin", 0);
+	light_pin = reader->GetInteger("System", "light_pin", 0);	
 	soil_pin = reader->GetInteger("System", "soil_pin", 1);
 	dht_pin = reader->GetInteger("System", "dht_pin", -1);
+	
+	std::cout << "pins: " << light_pin << soil_pin << dht_pin << std::endl;
 	
 	return 0;
 }

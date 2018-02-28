@@ -10,29 +10,29 @@
 #include "sensor.hpp"
 
 
-Sensor::Sensor(unsigned int delay_in, char pin_in) : 
+Sensor::Sensor(unsigned int delay_in, int pin_in) : 
 	delay{delay_in},
 	pin{pin_in},
 	measured{false} {
 }
 
-Analog::Analog(unsigned int delay_in, char pin_in) :
+Analog::Analog(unsigned int delay_in, int pin_in) :
 	Sensor{delay_in, pin_in} {
 }
 
-LightSen::LightSen(unsigned int delay_in, char pin_in) :
+LightSen::LightSen(unsigned int delay_in, int pin_in) :
 	Analog{delay_in, pin_in} {
 	
 	add_database("light");
 } 
 
-MoistSen::MoistSen(unsigned int delay_in, char pin_in) :
+MoistSen::MoistSen(unsigned int delay_in, int pin_in) :
 	Analog{delay_in, pin_in} {
 	
 	add_database("moisture");
 } 
 
-Dht22::Dht22(unsigned int delay_in, char pin_in) :
+Dht22::Dht22(unsigned int delay_in, int pin_in) :
 	Sensor{delay_in, pin_in} {
 	
 	add_database("temperature");
@@ -51,7 +51,7 @@ int Sensor::print(std::ostream& stream) const{
 }
 
 int Sensor::add_database(const std::string& str_in) {
-	value_vec.push_back(int(0));
+	value_vec.push_back(float(0));
 	database_vec.push_back(str_in);
 	
 	return 0;

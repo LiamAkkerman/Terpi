@@ -36,10 +36,10 @@ struct time_settings {
 	
 	
 struct pin_settings {
-	char spi_channel;
-	char light_pin;
-	char soil_pin;
-	char dht_pin;
+	int spi_channel;
+	int light_pin;
+	int soil_pin;
+	int dht_pin;
 	
 	int read_ini(INIReader*);
 	
