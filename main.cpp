@@ -8,6 +8,7 @@ Terpi garden control unit
 #include <cstdlib>
 #include <vector>
 #include <memory>
+#include <exception>
 
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -25,51 +26,51 @@ auto i_set = influx_settings(); //TODO make not global
 
 int main(int argc, char *argv[]) {
 	std::cout << "program started" << std::endl;
-	
-	
-	
+
+
+
 	//read time settings from settings file
 	auto reader = INIReader("settings.ini");
 	if (reader.ParseError() < 0) {
-        std::cout << "ERROR: can't load 'settings.ini'" << std::endl;
-        return -1;
-    }
-	
+    std::cout << "ERROR: can't load 'settings.ini'" << std::endl;
+    return -1;
+  }
+
 	auto t_set = time_settings(&reader);
 	auto p_set = pin_settings(&reader);
 	i_set.read_ini(&reader);
-	
+
 	std::cout << "settings parsed" << std::endl;
-	
-	
+
+
 	auto sensors = Sensor_Vec(&t_set, &p_set);
 	std::cout << "vector made" << std::endl;
-	
+
 	sensors[0].measure(); //for testing
 	sensors[1].measure();
 	sensors[2].measure();
-	
+
 	sensors[0].print(std::cout); //for testing
 	sensors[1].print(std::cout);
 	sensors[2].print(std::cout);
-	
-	
+
+
 	//initialize mcp3008 SPI adc
 	if(startSPI(p_set.spi_channel) < 0) {
 		std::cout << "ERROR: can't start SPI" << std::endl;
 		return -1;
-	} 
-	
-	//initialize timer 
+	}
+
+	//initialize timer
 	open_timer(1); // lower this for "accelerated time" for debugging
 	//open_timer(FULL_INC);
 	std::cout << "timer opened" << std::endl;
 	attach_handler();
 	std::cout << "timer function attached" << std::endl;
-	
-	
+
+
 	while(1); //TODO make this not so CPU intensive to idle
-	
+
 }
 
 int startSPI(int spi_channel) {
@@ -78,15 +79,15 @@ int startSPI(int spi_channel) {
 	if((wiringPiSPISetup(spi_channel, 1000000)) < 0) {
 		result = -1;
 	}
-	
+
 	return result;
 }
 
 
 void timer_handler(int signum) {
-	static unsigned int count = 0; 
+	static unsigned int count = 0;
 	char result = 0;
-	
+
 	//if the current interval count is a prechosen time, preform approriate action
 	if((count == 0) || (count == (3*280))) { //TODO phony numbers
 		int irl_count = get_irl_time(1); //TODO phony numbers
@@ -106,19 +107,19 @@ void timer_handler(int signum) {
 		if(read_dht22(&conditions) != 0) {
 			std::cout << "ERROR: DHT22 reading failed" << std::endl;
 			result = -1;
-		} 
+		}
 	}
 	if((count % settings.light_sensor_delay) == 0) {
 		if(read_light(&conditions) != 0) {
 			std::cout << "ERROR: light reading failed" << std::endl;
 			result = -1;
-		} 
+		}
 	}
 	if((count % settings.soil_sensor_delay) == 0) {
 		 if(read_soil_moist(&conditions) != 0) {
 			std::cout << "ERROR: soil moisture reading failed" << std::endl;
 			result = -1;
-		} 
+		}
 	}
 	if((count % FULL_DAY) == settings.light_on_time) {
 		//turn lights on
@@ -128,17 +129,17 @@ void timer_handler(int signum) {
 		//turn lights off
 		//this means that the duration has concluded
 	} */
-	
+
 	//update_display();
 	/* if(measured_any(&conditions) > 0) {
 		post_data(&conditions);
 		//measured_reset(&conditions);
 	} */
-	
+
 	std::cout << "-- Current increment: " << count << " --" << std::endl;
 	count = count + 1;
-	
-	/* 
+
+	/*
 		TODO:
 		I needed to changed this to void to work with the attach_handler function
 		I don't actually know how the reference to a function works, ...
@@ -146,7 +147,3 @@ void timer_handler(int signum) {
 	//return result;
 	*/
 }
-
-
-
-
